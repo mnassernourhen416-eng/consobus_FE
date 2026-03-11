@@ -1,1 +1,106 @@
-<p>gestion-chauffeur works!</p>
+<h2>Gestion des chauffeurs</h2>
+<p-button label="Ajouter chauffeur" icon="pi pi-plus" class="p-button-success mb-3"
+    (click)="displayCreateDialog=true"></p-button>
+<!-- Table -->
+<div class="card">
+    <p-table [value]="listChauffeur()" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+            <tr>
+                <th>Id</th>
+                <th>prenom</th>
+                <th>nom</th>
+                <th>Matricule</th>
+                <th>age</th>
+                <th>Etat</th>
+                <th>busId</th>
+                <th>Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-chauffeur>
+            <tr>
+                <td>{{ chauffeur.id }}</td>
+                <td>{{ chauffeur.nom }}</td>
+                <td>{{ chauffeur.prenom }}</td>
+                <td>{{ chauffeur.age }}</td>
+                <td>{{ chauffeur.matricule }}</td>
+                <td>{{ chauffeur.etat }}</td>
+                <td>{{ chauffeur.busId }}</td>
+                <td>
+                    <!-- <p-button label="Edit" icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"></p-button> -->
+                    <p-button icon="pi pi-pencil" [rounded]="true" severity="info" [outlined]="true" class="mr-2"
+                        (onClick)="showUpdateDialog(chauffeur)" />
+                    <p-button icon="pi pi-trash" [rounded]="true" severity="danger" [outlined]="true"
+                        (onClick)="showDleteDialog(chauffeur)" />
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<!-- Dialogs -->
+
+<p-dialog header="Ajouter un chauffeur" [modal]="true" [(visible)]="displayCreateDialog" [style]="{ width: '25rem' }">
+    <span class="p-text-secondary block mb-8">Update your information.</span>
+    <div class="flex items-center gap-4 mb-4">
+        <label for="mat" class="font-semibold w-24">Matricule</label>
+        <input pInputText id="mat" class="flex-auto" [(ngModel)]="newChaffeur.matricule" autocomplete="off" />
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="nom" class="font-semibold w-24">Nom</label>
+        <input pInputText id="nom" class="flex-auto" [(ngModel)]="newChaffeur.nom" autocomplete="off" />
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="prenom" class="font-semibold w-24">Prenom</label>
+        <input pInputText id="prenom" class="flex-auto" [(ngModel)]="newChaffeur.prenom" autocomplete="off" />
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="age" class="font-semibold w-24">Age</label>
+        <input pInputText id="age" class="flex-auto" [(ngModel)]="newChaffeur.age" autocomplete="off" />
+    </div>
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="displayCreateDialog = false" />
+        <p-button label="Save" (click)="createChauffeur()" />
+    </div>
+</p-dialog>
+
+<p-dialog header="Modifier un chauffeur" [modal]="true" [(visible)]="displayUpdateDialog" [style]="{ width: '25rem' }">
+    <span class="p-text-secondary block mb-8">Update your information.</span>
+    <div class="flex items-center gap-4 mb-4">
+        <label for="mat" class="font-semibold w-24">Matricule</label>
+        <input pInputText id="mat" class="flex-auto" [(ngModel)]="modChauffeur.matricule" autocomplete="off" />
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="nom" class="font-semibold w-24">Nom</label>
+        <input pInputText id="nom" class="flex-auto" [(ngModel)]="modChauffeur.nom" autocomplete="off" />
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="prenom" class="font-semibold w-24">prenom</label>
+        <input pInputText id="fabricant" class="flex-auto" [(ngModel)]="modChauffeur.prenom" autocomplete="off" />
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="etat" class="font-semibold w-24">Etat</label>
+        <!-- <input pInputText id="etat" class="flex-auto" [(ngModel)]="modChauffeur.etat" autocomplete="off" /> -->
+        <p-select [options]="lisEtatChauffeur" [(ngModel)]="modChauffeur.etat" placeholder="Choisir etat"
+            class="w-full md:w-56" />
+
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="age" class="font-semibold w-24">Age</label>
+        <input pInputText id="age" class="flex-auto" [(ngModel)]="modChauffeur.age" autocomplete="off" />
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="busId" class="font-semibold w-24">BusId</label>
+        <input pInputText id="busId" class="flex-auto" [(ngModel)]="modChauffeur.busId" autocomplete="off" />
+    </div>
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="displayUpdateDialog = false" />
+        <p-button label="Save" (click)="updateChauffeur()" />
+    </div>
+</p-dialog>
+<!--suppremer cfauffeur-->
+<p-dialog header="Supprimer un chauffeur" [modal]="true" [(visible)]="dispayDeleteDialog" [style]="{ width: '25rem' }">
+    <span class="p-text-secondary block mb-8">Voulez-vous vraiment supprimer ce chauffeur ?</span>
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="dispayDeleteDialog = false" />
+        <p-button label="remove" (click)="removeChauffeur()" severity="danger" />
+    </div>
+</p-dialog>

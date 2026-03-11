@@ -1,4 +1,8 @@
-export type EtatChauffeur = 'Disponible' | 'EnService' ;
+export enum EtatChauffeur {
+  Libre = 'Libre',
+  EnService = 'EnService',
+  NonDisponible = 'NonDisponible'
+}
 // adapte selon ton enum Prisma
 
 import { Bus } from './bus.model';

@@ -1,10 +1,10 @@
-import { Component, computed, effect, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { AppTopbar } from './app.topbar';
-import { AppSidebar } from './app.sidebar';
-import { AppFooter } from './app.footer';
 import { LayoutService } from '@/app/layout/service/layout.service';
+import { CommonModule } from '@angular/common';
+import { Component, computed, effect, inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AppFooter } from './app.footer';
+import { AppSidebar } from './app.sidebar';
+import { AppTopbar } from './app.topbar';
 
 @Component({
     selector: 'app-layout',

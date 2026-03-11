@@ -1,4 +1,9 @@
-export type EtatBus = 'Disponible' | 'EnPanne';
+export enum EtatBus {
+  'Disponible' = 'Disponible',
+  'EnService' = 'EnService',
+  'EnPanne' = 'EnPanne'
+}
+
 // adapte les valeurs selon ton enum Prisma
 
 import { Chauffeur } from './chauffeur.model';
@@ -9,7 +14,8 @@ export interface Bus {
   id: number;
   model: string;
   fabricant: string;
-  etat: EtatBus;
+  matricule: string;
+  etat?: EtatBus;
   chauffeur?: Chauffeur;     // optionnel comme dans Prisma
   trajet: Trajet[];          // relation 1-N
   consommation: Consommation[];
