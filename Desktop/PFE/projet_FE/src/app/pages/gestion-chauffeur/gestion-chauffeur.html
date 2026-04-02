@@ -1,28 +1,80 @@
 <h2>Gestion des chauffeurs</h2>
-<p-button label="Ajouter chauffeur" icon="pi pi-plus" class="p-button-success mb-3"
-    (click)="displayCreateDialog=true"></p-button>
+<div class="flex  gap-2">
+    <p-button label="Ajouter chauffeur" icon="pi pi-plus" class="p-button-success mb-3"
+        (click)="displayCreateDialog=true"></p-button>
+</div>
+<!--recherche-->
+<div class=" flex justify-between mb-3">
+    <span class=" p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" placeholder="Recherche..."
+            (input)="dt.filterGlobal($event.target.value, 'contains')" />
+    </span>
+</div>
 <!-- Table -->
 <div class="card">
-    <p-table [value]="listChauffeur()" [tableStyle]="{ 'min-width': '50rem' }">
+    <p-table #dt [globalFilterFields]="['matricule','prenom','nom', 'etat', 'busId']" [value]="listChauffeur()"
+        [tableStyle]="{ 'min-width': '50rem' }" [rows]="10" [paginator]="true">
         <ng-template #header>
             <tr>
-                <th>Id</th>
-                <th>prenom</th>
-                <th>nom</th>
-                <th>Matricule</th>
-                <th>age</th>
-                <th>Etat</th>
-                <th>busId</th>
+                <!-- <th>Id</th>-->
+                <th pSortableColumn="matricle">Matricule
+                    <p-sortIcon field="matricle"></p-sortIcon>
+                </th>
+                <th pSortableColumn="prenom">prenom
+                    <p-sortIcon field="prenom"></p-sortIcon>
+                </th>
+                <th pSortableColumn="nom">nom
+                    <p-sortIcon field="nom"></p-sortIcon>
+                </th>
+                <th pSortableColumn="age">age
+                    <p-sortIcon field="age"></p-sortIcon>
+                </th>
+                <th pSortableColumn="Etat">Etat
+                    <p-sortIcon field="Etat"></p-sortIcon>
+                </th>
+                <th pSortableColumn="busId">busId
+                    <p-sortIcon field="busId"></p-sortIcon>
+                </th>
                 <th>Actions</th>
             </tr>
+            <!-- Filter row-->
+            <tr>
+                <th>
+                    <p-columnFilter type="text" field="busId" display="menu"></p-columnFilter>
+
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="matricule" display="menu"></p-columnFilter>
+
+                </th>
+                <th>
+                    <p-columnFilter type="Etat" field="etat" display="menu"></p-columnFilter>
+
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="nom" display="menu"></p-columnFilter>
+
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="prenom" display="menu"></p-columnFilter>
+
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="age" display="menu"></p-columnFilter>
+
+                </th>
+            </tr>
+
         </ng-template>
         <ng-template #body let-chauffeur>
             <tr>
-                <td>{{ chauffeur.id }}</td>
+                <!-- <td>{{ chauffeur.id }}</td>-->
+                <td>{{ chauffeur.matricule }}</td>
                 <td>{{ chauffeur.nom }}</td>
                 <td>{{ chauffeur.prenom }}</td>
                 <td>{{ chauffeur.age }}</td>
-                <td>{{ chauffeur.matricule }}</td>
+
                 <td>{{ chauffeur.etat }}</td>
                 <td>{{ chauffeur.busId }}</td>
                 <td>
@@ -33,63 +85,98 @@
                         (onClick)="showDleteDialog(chauffeur)" />
                 </td>
             </tr>
+
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td [attr.colspan]="cols?.length">No data found.</td>
+            </tr>
         </ng-template>
     </p-table>
 </div>
 <!-- Dialogs -->
 
 <p-dialog header="Ajouter un chauffeur" [modal]="true" [(visible)]="displayCreateDialog" [style]="{ width: '25rem' }">
-    <span class="p-text-secondary block mb-8">Update your information.</span>
-    <div class="flex items-center gap-4 mb-4">
-        <label for="mat" class="font-semibold w-24">Matricule</label>
-        <input pInputText id="mat" class="flex-auto" [(ngModel)]="newChaffeur.matricule" autocomplete="off" />
-    </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="nom" class="font-semibold w-24">Nom</label>
-        <input pInputText id="nom" class="flex-auto" [(ngModel)]="newChaffeur.nom" autocomplete="off" />
-    </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="prenom" class="font-semibold w-24">Prenom</label>
-        <input pInputText id="prenom" class="flex-auto" [(ngModel)]="newChaffeur.prenom" autocomplete="off" />
-    </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="age" class="font-semibold w-24">Age</label>
-        <input pInputText id="age" class="flex-auto" [(ngModel)]="newChaffeur.age" autocomplete="off" />
-    </div>
+    <span class="p-text-secondary block mb-8"> ajouter votre information</span>
+    <form [formGroup]="chauForm">
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="mat" class="font-semibold ">Matricule</label>
+            <input pInputText id="mat" class="col-span-2" formControlName="matricule" autocomplete="off"
+                [class.p-invalid]="chauForm.get('matricule')?.invalid && chauForm.get('matricule')?.touched" />
+
+            @if(chauForm.get('matricule')?.invalid && chauForm.get('matricule')?.touched){
+            <small class="text-red-500 col-span-3">
+                Matricule obligatoire
+            </small>}
+        </div>
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="nom" class="font-semibold ">Nom</label>
+            <input pInputText id="nom" class="col-span-2" formControlName="nom" autocomplete="off"
+                [class.p-invalid]="chauForm.get('nom')?.invalid && chauForm.get('nom')?.touched" />
+            @if(chauForm.get('nom')?.invalid && chauForm.get('nom')?.touched){
+            <small class="text-red-500 col-span-3">
+                Nom obligatoire
+            </small>}
+        </div>
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="prenom" class="font-semibold ">Prenom</label>
+            <input pInputText id="prenom" class="col-span-2" formControlName="prenom" autocomplete="off"
+                [class.p-invalid]="chauForm.get('prenom')?.invalid && chauForm.get('prenom')?.touched" />
+            @if(chauForm.get('prenom')?.invalid && chauForm.get('prenom')?.touched){
+            <small class="text-red-500 col-span-3">
+                Prenom obligatoire
+            </small>}
+        </div>
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="age" class="font-semibold w-24">Age</label>
+            <input pInputText type="number" class="col-span-2" formControlName="age" autocomplete="off"
+                [class.p-invalid]="chauForm.get('age')?.invalid && chauForm.get('age')?.touched" />
+            @if(chauForm.get('age')?.invalid && chauForm.get('age')?.touched){
+            <small class="text-red-500 col-span-3">
+                age obligatoire
+            </small>}
+        </div>
+    </form>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="displayCreateDialog = false" />
-        <p-button label="Save" (click)="createChauffeur()" />
+        <p-button [disabled]="chauForm.invalid" label="Save" (click)="createChauffeur()" />
     </div>
 </p-dialog>
 
 <p-dialog header="Modifier un chauffeur" [modal]="true" [(visible)]="displayUpdateDialog" [style]="{ width: '25rem' }">
     <span class="p-text-secondary block mb-8">Update your information.</span>
-    <div class="flex items-center gap-4 mb-4">
-        <label for="mat" class="font-semibold w-24">Matricule</label>
-        <input pInputText id="mat" class="flex-auto" [(ngModel)]="modChauffeur.matricule" autocomplete="off" />
+
+    <div class="grid grid-cols-3 items-center  mb-4">
+        <label for="mat" class="font-semibold ">Matricule</label>
+        <input pInputText id="mat" class="col-span-2" [(ngModel)]="modChauffeur.matricule" autocomplete="off" />
     </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="nom" class="font-semibold w-24">Nom</label>
-        <input pInputText id="nom" class="flex-auto" [(ngModel)]="modChauffeur.nom" autocomplete="off" />
+    <div class="grid grid-cols-3 items-center  mb-4">
+        <label for="nom" class="font-semibold ">Nom</label>
+        <input pInputText id="nom" class="col-span-2" [(ngModel)]="modChauffeur.nom" autocomplete="off" />
     </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="prenom" class="font-semibold w-24">prenom</label>
-        <input pInputText id="fabricant" class="flex-auto" [(ngModel)]="modChauffeur.prenom" autocomplete="off" />
+    <div class="grid grid-cols-3 items-center  mb-4">
+        <label for="prenom" class="font-semibold">prenom</label>
+        <input pInputText id="fabricant" class="col-span-2" [(ngModel)]="modChauffeur.prenom" autocomplete="off" />
     </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="etat" class="font-semibold w-24">Etat</label>
+    <div class="grid grid-cols-3 items-center  mb-4">
+        <label for="etat" class="font-semibold ">Etat</label>
         <!-- <input pInputText id="etat" class="flex-auto" [(ngModel)]="modChauffeur.etat" autocomplete="off" /> -->
         <p-select [options]="lisEtatChauffeur" [(ngModel)]="modChauffeur.etat" placeholder="Choisir etat"
-            class="w-full md:w-56" />
+            class="w-full md:w-56 col-span-2" />
 
     </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="age" class="font-semibold w-24">Age</label>
-        <input pInputText id="age" class="flex-auto" [(ngModel)]="modChauffeur.age" autocomplete="off" />
+    <div class="grid grid-cols-3 items-center  mb-4">
+        <label for="age" class="font-semibold">Age</label>
+        <input pInputText type="number" id="age" class="col-span-2" [(ngModel)]="modChauffeur.age" autocomplete="off" />
     </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="busId" class="font-semibold w-24">BusId</label>
-        <input pInputText id="busId" class="flex-auto" [(ngModel)]="modChauffeur.busId" autocomplete="off" />
+    <div class="grid grid-cols-3 items-center  mb-4">
+        <label for="busId" class="font-semibold ">BusId</label>
+        <!--X <input pInputText type="number" id="busId" class="flex-auto" [(ngModel)]="modChauffeur.busId"
+            autocomplete="off" /> -->
+        <!--<p-select [options]="listBus" [(ngModel)]="modChauffeur.busId" placeholder="Choisir bus"
+            class="w-full md:w-56" />-->
+        <p-select [options]="listBus()" optionLabel="matricule" optionValue="id" [(ngModel)]="modChauffeur.busId"
+            class="col-span-2" placeholder="Choisir bus"></p-select>
     </div>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="displayUpdateDialog = false" />

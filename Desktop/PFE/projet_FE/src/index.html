@@ -1,16 +1,19 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Sakai - PrimeNG</title>
-        <base href="/" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="preconnect" href="https://primefaces.org" />
-        <link rel="icon" type="image/x-icon" href="https://primefaces.org/cdn/primeng/images/favicon.png" />
-        <link href="https://fonts.cdnfonts.com/css/lato" rel="stylesheet" />
-    </head>
 
-    <body>
-        <app-root></app-root>
-    </body>
+<head>
+    <meta charset="utf-8" />
+    <title>consommationBus-CPG</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://primefaces.org" />
+    <link rel="icon" type="image/x-icon"
+        href="data:image/png;base64,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" />
+    <link href="https://fonts.cdnfonts.com/css/lato" rel="stylesheet" />
+</head>
+
+<body>
+    <app-root></app-root>
+</body>
+
 </html>

@@ -1,26 +1,67 @@
 <h2>Gestion des consommations</h2>
-<p-button label="Ajouter consommation" icon="pi pi-plus" class="p-button-success mb-3"
-    (click)="displayCreateDialog=true"></p-button>
-<!-- Table -->
+<div class="flex  gap-2">
+    <p-button label="Ajouter consommation" icon="pi pi-plus" class="p-button-primary mb-3"
+        (click)="displaySimpleMultipleButtons=!displaySimpleMultipleButtons;">
+
+    </p-button>
+    @if(displaySimpleMultipleButtons){
+    <p-button label="Simple" icon="pi pi-file" severity="info" class=" mb-3" (click)="displaySimpleDialog=true">
+    </p-button>
+    <p-button label="Multiple" icon="pi pi-bars" severity="info" class="mb-3" (click)="showAjouterConoMultipleDialog()">
+    </p-button>
+    }
+</div>
+<!--recherche-->
+<div class=" flex justify-between mb-3">
+    <span class=" p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" placeholder="Recherche..."
+            (input)="dt.filterGlobal($event.target.value, 'contains')" />
+    </span>
+</div>
+
+<!-- Export Excel 
+  <p-button label="Export Excel" icon="pi pi-file-excel" (click)="exportExcel()"></p-button>
+</div>-->
+<div class="filter-buttons">
+    <button mat-raised-button (click)="applyFilter('all')">Tous</button>
+    <button mat-raised-button (click)="applyFilter('month')">Ce mois</button>
+    <button mat-raised-button (click)="applyFilter('semaine')">Cette semaine</button>
+</div>
+<!--Table -->
+
 <div class="card">
-    <p-table [value]="listConsommation()" [tableStyle]="{ 'min-width': '50rem' }">
+
+    <p-table #dt [globalFilterFields]="['busId', 'date', 'valeur', 'type']" [value]="listConsommation()" [rows]="9"
+        [paginator]="true" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template #header>
             <tr>
-                <th>Id</th>
-                <th>Date</th>
-                <th>valeur</th>
-                <th>type</th>
-                <th>busId</th>
+                <!-- <th>Id</th>-->
+                <th pSortableColumn="busId">bus
+                    <p-sortIcon field="busId"></p-sortIcon>
+                </th>
+                <th pSortableColumn="date">Date
+                    <p-sortIcon field="date"></p-sortIcon>
+                </th>
+                <th pSortableColumn="valeur">consommation
+                    <p-sortIcon field="valeur"></p-sortIcon>
+                </th>
+                <th pSortableColumn="type">type
+                    <p-sortIcon field="type"></p-sortIcon>
+                </th>
+
                 <th>Actions</th>
             </tr>
+
         </ng-template>
         <ng-template #body let-consommation>
             <tr>
-                <td>{{ consommation.id }}</td>
-                <td>{{ consommation.date | date:'yyyy-MM-dd HH:mm'}}</td>
+                <!-- <td>{{ consommation.id }}</td>-->
+                <td>{{ consommation.busId }}</td>
+                <td>{{ consommation.date | date:'yyyy-MM-dd'}}</td>
                 <td>{{ consommation.valeur}}</td>
                 <td>{{ consommation.type }}</td>
-                <td>{{ consommation.busId }}</td>
+
                 <td>
                     <!-- <p-button label="Edit" icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"></p-button> -->
                     <p-button icon="pi pi-pencil" [rounded]="true" severity="info" [outlined]="true" class="mr-2"
@@ -31,12 +72,14 @@
             </tr>
         </ng-template>
     </p-table>
+
 </div>
 <!-- Dialogs -->
 
-<p-dialog header="Ajouter une consommation" [modal]="true" [(visible)]="displayCreateDialog"
-    [style]="{ width: '25rem' }" (visibleChange)="displayUpdateDialog.set($event)">
+<!--<p-dialog header="Ajouter une consommation" [modal]="true" [(visible)]="displayCreateDialog"
+    [style]="{ width: '50rem' }" (visibleChange)="displayUpdateDialog.set($event)">
     <span class="p-text-secondary block mb-8">Update your information.</span>
+
     <div class="flex items-center gap-4 mb-4">
         <label for="date" class="font-semibold w-24">Date</label>
         <input pInputText type="datetime-local" id="date" class="flex-auto" [(ngModel)]="newConsommation.date"
@@ -49,6 +92,7 @@
     <div class="flex items-center gap-4 mb-8">
         <label for="type" class="font-semibold w-24">Type</label>
         <input pInputText id="type" class="flex-auto" [(ngModel)]="newConsommation.type" autocomplete="off" />
+        >
     </div>
     <div class="flex items-center gap-4 mb-8">
         <label for="busId" class="font-semibold w-24">busId</label>
@@ -58,30 +102,67 @@
         <p-button label="Cancel" severity="secondary" (click)="displayCreateDialog = false" />
         <p-button label="Save" (click)="createConsommation()" />
     </div>
-</p-dialog>
+</p-dialog>-->
 
 <p-dialog header="Modifier une consommation" [modal]="true" [(visible)]="displayUpdateDialog"
     [style]="{ width: '25rem' }">
     <span class="p-text-secondary block mb-8">Update your information.</span>
-    <div class="flex items-center gap-4 mb-4">
-        <label for="date" class="font-semibold w-24">Date</label>
-        <input pInputText id="mat" class="flex-auto" [(ngModel)]="modconsommation.date" autocomplete="off" />
-    </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="valeur" class="font-semibold w-24">Valeur</label>
-        <input pInputText id="valeur" class="flex-auto" [(ngModel)]="modconsommation.valeur" autocomplete="off" />
-    </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="type" class="font-semibold w-24">Fabricant</label>
-        <input pInputText id="type" class="flex-auto" [(ngModel)]="modconsommation.type" autocomplete="off" />
-    </div>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="busId" class="font-semibold w-24">busId</label>
-        <input pInputText id="busId" class="flex-auto" [(ngModel)]="modconsommation.busId" autocomplete="off" />
-    </div>
+    <form [formGroup]="modconsommationForm">
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="Matricule" class="font-semibold ">Matricule</label>
+            <!-- <input pInputText id="busId" class="flex-auto" [(ngModel)]="modconsommation.busId" autocomplete="off" />-->
+            <div class="col-span-2">
+                <p-select class="w-full" [options]="listBus()" optionLabel="matricule" optionValue="id"
+                    formControlName="busId" placeholder="Choisir matricule"
+                    [class.p-invalid]="modconsommationForm.get('busId')?.invalid && modconsommationForm.get('busId')?.touched">
+                </p-select>
+                @if(modconsommationForm.get('busId')?.invalid && modconsommationForm.get('busId')?.touched){
+                <small class="text-red-500">Matricule obligatoire</small>
+                }
+            </div>
+        </div>
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="type" class="font-semibold w-24">type</label>
+            <!-- <input pInputText id="type" class="flex-auto" [(ngModel)]="modconsommation.type" autocomplete="off" />-->
+            <div class="col-span-2">
+                <p-select [options]="listTypeConsommation" formControlName="type" placeholder="Choisir TYPE"
+                    class="w-full" appendTo="body" (onChange)="changeLabelDate($event)"
+                    [class.p-invalid]="modconsommationForm.get('type')?.invalid && modconsommationForm.get('type')?.touched">
+                </p-select>
+                @if(modconsommationForm.get('type')?.invalid && modconsommationForm.get('type')?.touched){
+                <small class="text-red-500">Type obligatoire</small>
+                }
+            </div>
+        </div>
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="date" class="font-semibold ">{{labelDate}}</label>
+            <div class="col-span-2">
+                <input pInputText [type]="labelDate=='Mois' ? 'month' : 'date'" id="date" class="w-full"
+                    formControlName="date" autocomplete="off"
+                    [class.p-invalid]="modconsommationForm.get('date')?.invalid && modconsommationForm.get('date')?.touched" />
+                @if(modconsommationForm.get('date')?.invalid && modconsommationForm.get('date')?.touched){
+                <small class="text-red-500">Date obligatoire</small>
+                }
+            </div>
+            <!-- <input pInputText id="date" class="flex-auto" [(ngModel)]="modconsommation.date" autocomplete="off" />-->
+
+        </div>
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label for="valeur" class="font-semibold ">Valeur</label>
+            <div class="col-span-2">
+                <input pInputText id="valeur" class="w-full" formControlName="valeur" autocomplete="off"
+                    [class.p-invalid]="modconsommationForm.get('valeur')?.invalid && modconsommationForm.get('valeur')?.touched" />
+                @if(modconsommationForm.get('valeur')?.invalid && modconsommationForm.get('valeur')?.touched){
+                <small class="text-red-500">Valeur obligatoire</small>
+                }
+            </div>
+            <!-- <input pInputText id="valeur" class="flex-auto" [(ngModel)]="modconsommation.valeur" autocomplete="off" />-->
+        </div>
+    </form>
+
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="displayUpdateDialog.set(false)" />
-        <p-button label="Save" (click)="updateConsommation()" />
+        <p-button [disabled]="modconsommationForm.invalid" label="Save" (click)="updateConsommation()" />
     </div>
 </p-dialog>
 <!-- supprimer consommation -->
@@ -91,5 +172,183 @@
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="displayDeleteDialog.set(false)" />
         <p-button label="remove" (click)="removeConsommation()" severity="danger" />
+    </div>
+</p-dialog>
+<!--dialogue button simple-->
+<p-dialog header="Ajouter Consommation simple" [modal]="true" [(visible)]="displaySimpleDialog">
+    <!-- <span class="p-text-secondary  mb-8">Ajouter une consommation</span> -->
+    <form [formGroup]="consForm">
+
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label class="font-semibold">Matricule</label>
+
+            <div class="col-span-2">
+                <p-select class="w-full" [options]="listBus()" optionLabel="matricule" formControlName="bus"
+                    placeholder="Choisir matricule"
+                    [class.p-invalid]="consForm.get('bus')?.invalid && consForm.get('bus')?.touched">
+                </p-select>
+
+                @if(consForm.get('bus')?.invalid && consForm.get('bus')?.touched){
+                <small class="text-red-500">Matricule obligatoire</small>
+                }
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label class="font-semibold">Type</label>
+
+            <div class="col-span-2">
+                <p-select [options]="listTypeConsommation" formControlName="type" placeholder="Choisir TYPE"
+                    class="w-full" appendTo="body"
+                    [class.p-invalid]="consForm.get('type')?.invalid && consForm.get('type')?.touched"
+                    (onChange)="changeLabelDate($event)">
+                </p-select>
+
+                @if(consForm.get('type')?.invalid && consForm.get('type')?.touched){
+                <small class="text-red-500">
+                    Type obligatoire
+                </small>
+                }
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label class="font-semibold">{{labelDate}}</label>
+
+            <input pInputText [type]="labelDate=='Mois' ? 'month' : 'date'" id="date" class="col-span-2"
+                formControlName="date"
+                [class.p-invalid]="consForm.get('date')?.invalid && consForm.get('date')?.touched" />
+
+            @if(consForm.get('date')?.invalid && consForm.get('date')?.touched){
+            <small class="text-red-500 col-span-3">
+                Date obligatoire
+            </small>
+            }
+        </div>
+
+
+        <div class="grid grid-cols-3 items-center mb-4">
+            <label class="font-semibold">Valeur</label>
+
+            <input pInputText type="number" class="col-span-2" formControlName="valeur"
+                [class.p-invalid]="consForm.get('valeur')?.invalid && consForm.get('valeur')?.touched" />
+
+            @if(consForm.get('valeur')?.invalid && consForm.get('valeur')?.touched){
+            <small class="text-red-500 col-span-3">
+                Valeur obligatoire
+            </small>
+            }
+        </div>
+
+
+
+    </form>
+
+
+    <div class="flex justify-end items-center gap-4 mt-8">
+        <p-button label="Cancel" severity="secondary" (click)="displaySimpleDialog=false" />
+        <p-button [disabled]="consForm.invalid" label="Save" (click)="createConsommationSimple()" />
+    </div>
+</p-dialog>
+
+<!--dialogue button multiple-->
+<p-dialog header="Ajouter Consommation multiple" [modal]="true" [(visible)]="displayMultipleDialog"
+    (onHide)="HideAjouterConsoMultipleDialog()">
+    <div class="grid grid-cols-3 items-center mb-4">
+        <label class="font-semibold">Type</label>
+
+        <div class="col-span-2">
+            <p-select [options]="listTypeConsommation" [(ngModel)]="newConsommation.type" placeholder="Choisir TYPE"
+                class="w-full" appendTo="body" (onChange)="changeLabelDate($event)">
+            </p-select>
+
+            @if(consForm.get('type')?.invalid && consForm.get('type')?.touched){
+            <small class="text-red-500">
+                Type obligatoire
+            </small>
+            }
+        </div>
+    </div>
+    <div class="grid grid-cols-3 items-center mb-4">
+
+        <label for="date" class="font-semibold ">{{labelDate}}</label>
+        <input pInputText [type]="labelDate=='Mois' ? 'month' : 'date'" id="date" class="col-span-2"
+            [(ngModel)]="newConsommation.date" (change)="loadBusConsommation()" autocomplete="off" required />
+    </div>
+
+
+    <p-table [value]="listMultipleConsommation()" dataKey="id" editMode="cell">
+        <ng-template #header>
+            <tr>
+
+                <!-- <th style="width:25%">ID</th> -->
+                <th style="width:25%">Matricule</th>
+                <th style="width:25%">Consommation</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-bus let-editing="editing">
+            <tr>
+                <!-- <td>
+                    <span>
+                        {{bus.id}}
+                    </span>
+
+                </td> -->
+                <td>
+                    <span>
+                        {{bus.matricule}}
+                    </span>
+                    <ng-template #input>
+                        <input pInputText type="text" [(ngModel)]="bus.matricule" fluid />
+                    </ng-template>
+                    <ng-template #output>
+                        {{ bus.matricule }}
+                    </ng-template>
+                </td>
+                @if(bus.consommation && bus.consommation.length > 0){
+                <td>
+                    <input pInputText type="number" [(ngModel)]="newConsommationMap[bus.id]"
+                        (onChange)="onNewConsommation(bus, $event)" fluid />
+                </td>
+                }
+                @else{
+                <td>
+                    <input pInputText type="number" [(ngModel)]="newConsommationMap[bus.id]"
+                        (onChange)="onNewConsommation(bus, $event)" fluid />
+                </td>
+                }
+
+                <!--  @if(bus.consommation && bus.consommation.length > 0){
+                <td [pEditableColumn]="bus.consommation[0]" pEditableColumnField="Consommation">
+                    <p-cellEditor>
+                        <ng-template #input>
+                            <input pInputText type="number" [(ngModel)]=" bus.consommation[0].valeur" fluid />
+                        </ng-template>
+                        <ng-template #output>
+                            {{ bus.consommation[0].valeur}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                }
+                @else{
+                <td pEditableColumn>
+                    <p-cellEditor>
+                        <ng-template #input>
+                            <input pInputText type="number" [(ngModel)]="bus.consommation[0].valeur" fluid />
+                        </ng-template>
+                        <ng-template #output>
+                            0
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                } -->
+            </tr>
+        </ng-template>
+    </p-table>
+
+
+    <div class="flex justify-end items-center gap-4 mt-8">
+        <p-button label="Annuler" severity="secondary" (click)="HideAjouterConsoMultipleDialog()" />
+        <p-button label="Enregistrer" (click)="createMultipleConsommation()" />
     </div>
 </p-dialog>

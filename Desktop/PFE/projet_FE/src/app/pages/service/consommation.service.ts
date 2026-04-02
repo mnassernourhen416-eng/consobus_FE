@@ -7,14 +7,20 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class ConsommationService {
+    // update(id: number, payload: { busId: number; valeur: number; type: TypeConsommation; date: Date; }): any {
+    //    throw new Error('Method not implemented.');
+    // }
     private apiUrl = environment.apiUrl;
     private http = inject(HttpClient);
 
     getAllConsommation(): Observable<Consommation[]> {
         return this.http.get<Consommation[]>(`${this.apiUrl}/consommation/all`);
     }
-    createConsommation(consommation: Consommation): Observable<Consommation> {
+    createSimpleConsommation(consommation: Partial<Consommation>): Observable<Consommation> {
         return this.http.post<Consommation>(`${this.apiUrl}/consommation`, consommation);
+    }
+    createMultipleConsommation(consommations: Partial<Consommation>[]): Observable<Partial<Consommation[]>> {
+        return this.http.post<Partial<Consommation[]>>(`${this.apiUrl}/consommation/multiple/upsert`, consommations);
     }
 
     //get consommation by id   
@@ -26,8 +32,8 @@ export class ConsommationService {
         return this.http.get<Consommation[]>(`${this.apiUrl}/consommation/busvaleur?busId=${busId}&valeur=${valeur}`);
     }
     //update consommation
-    updateConsommation(id: number, consommation: Consommation): Observable<Consommation> {
-        return this.http.patch<Consommation>(`${this.apiUrl}/consommation/${id}`, consommation);
+    updateConsommation(idConsommation: number, consommation: Partial<Consommation>): Observable<Consommation> { // Partial< Consommation): Observable<Consommation> {
+        return this.http.patch<Consommation>(`${this.apiUrl}/consommation/${idConsommation}`, consommation);
     }
     //delete consommation 
     removeConsommation(id: number): Observable<void> {

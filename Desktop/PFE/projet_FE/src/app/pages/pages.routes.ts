@@ -11,5 +11,6 @@ export default [
     { path: 'gestion_consommation', component: GestionConsommation },
     { path: 'gestion_trajet', component: GestionTrajet },
     { path: 'gestion_chauffeur', component: GestionChauffeur },
+
     { path: '**', redirectTo: '/notfound' }
 ] as Routes;

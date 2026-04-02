@@ -1,22 +1,32 @@
 
+import { Bus } from '@/app/models/bus.model';
 import { Chauffeur, EtatChauffeur } from '@/app/models/chauffeur.model';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from "primeng/button";
+import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
+import { BusService } from '../service/bus.service';
 import { ChauffeurService } from '../service/chauffeur.service';
 @Component({
   selector: 'app-gestion-chauffeur',
-  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, SelectModule],
+  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, SelectModule, DataViewModule, ReactiveFormsModule],
   templateUrl: './gestion-chauffeur.html',
   styleUrl: './gestion-chauffeur.scss',
 })
 export class GestionChauffeur {
+  dt: any;
+  listBus = signal<Bus[]>([]);
+  selectedBusIds?: Bus;
+  selectedBus?: Bus;
+  cols: any;
+  constructor(private fb: FormBuilder) { }
   private chauffeurService = inject(ChauffeurService);
+  private busService = inject(BusService)
   listChauffeur = signal<Chauffeur[]>([]); //  signal state
   displayCreateDialog: boolean = false;
   displayUpdateDialog: boolean = false;
@@ -27,7 +37,17 @@ export class GestionChauffeur {
   //Read from type Etat chauffeur
 
   lisEtatChauffeur = Object.values(EtatChauffeur);
+
+  chauForm!: FormGroup;
   ngOnInit() {
+
+    this.chauForm = this.fb.group({
+      matricule: [null, Validators.required],
+      prenom: [null, Validators.required],
+      nom: [null, Validators.required],
+      age: [null, [Validators.required, Validators.min(18)]]
+
+    });
     this.chauffeurService.getAllChauffeur().subscribe({
       next: (response) => {
         this.listChauffeur.set(response);
@@ -37,23 +57,44 @@ export class GestionChauffeur {
         console.error('Failed to fetch chauffeurs:', error);
       }
     });
+    this.getAllBus();
+  }
+  getAllBus() {
+    this.busService.getAllBus().subscribe({
+      next: (response) => {
+        this.listBus.set(response);
+        console.log('All Bus:', response);
+      },
+      error: (error) => {
+        console.error('Failed to fetch buses:', error);
+      }
+    });
+
   }
   createChauffeur() {
-    if (this.newChaffeur.nom && this.newChaffeur.prenom && this.newChaffeur.matricule && this.newChaffeur.age) {
-      this.chauffeurService.createChauffeur(this.newChaffeur as Chauffeur).subscribe({
-        next: (response) => {
-          console.log('Chauffeur created:', response);
-          this.listChauffeur.update(chauffeurs => [...chauffeurs, response]); // Update the signal state
-          this.displayCreateDialog = false;
-          this.newChaffeur = {}; // Reset form
-        },
-        error: (error) => {
-          console.error('Failed to create chauffeur:', error);
-        }
-      });
-    } else {
-      console.warn('Please fill in all required fields');
+    if (this.chauForm.invalid) {
+      this.chauForm.markAllAsTouched();
+      return;
     }
+
+    let formValue = this.chauForm.value;
+
+    //if (this.newChaffeur.nom && this.newChaffeur.prenom && this.newChaffeur.matricule && this.newChaffeur.age) {
+    this.chauffeurService.createChauffeur(formValue).subscribe({
+      next: (response) => {
+        console.log('Chauffeur created:', response);
+        this.listChauffeur.update(chauffeurs => [...chauffeurs, response]); // Update the signal state
+        this.displayCreateDialog = false;
+        this.newChaffeur = {};
+        this.chauForm.reset(); // Reset form
+      },
+      error: (error) => {
+        console.error('Failed to create chauffeur:', error);
+      }
+    });
+    //  } else {
+    console.warn('Please fill in all required fields');
+    // }
   }
 
   showUpdateDialog(chauffeur: Chauffeur) {
@@ -64,10 +105,11 @@ export class GestionChauffeur {
     if (this.modChauffeur.id && this.modChauffeur.nom
       && this.modChauffeur.prenom && this.modChauffeur.matricule
       && this.modChauffeur.age && this.modChauffeur.etat) {
+      this.modChauffeur.busId = Number(this.modChauffeur.busId);
 
       console.log("this.modChauffeur: ", this.modChauffeur);
 
-      this.chauffeurService.updateChauffeur(this.modChauffeur.id, this.modChauffeur as Chauffeur).subscribe({
+      this.chauffeurService.updateChauffeur(this.modChauffeur.id!, this.modChauffeur as Chauffeur).subscribe({
         next: (response) => {
           console.log('Chauffeur updated:', response);
           //update the signal
