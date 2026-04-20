@@ -25,6 +25,9 @@ export class ChauffeurService {
     getChauffeurById(id: number): Observable<Chauffeur> {
         return this.http.get<Chauffeur>(`${this.apiUrl}/chauffeur/${id}`);
     }
+    checkCPGMatricule(matricule: string): Observable<{ exists: boolean }> {
+        return this.http.get<{ exists: boolean }>(`${this.apiUrl}/chauffeur/check-cpg-matricule/${matricule}`);
+    }
     //get trajet by bus/:id
     //getTrajetByBusValeur(busId: string): Observable<Trajet[]> {
     // return this.http.get<Trajet[]>(`${this.apiUrl}/trajet/bus/id=${busId}`);

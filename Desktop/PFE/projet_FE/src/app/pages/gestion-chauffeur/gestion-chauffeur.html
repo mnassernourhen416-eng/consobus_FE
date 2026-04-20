@@ -3,82 +3,57 @@
     <p-button label="Ajouter chauffeur" icon="pi pi-plus" class="p-button-success mb-3"
         (click)="displayCreateDialog=true"></p-button>
 </div>
-<!--recherche-->
-<div class=" flex justify-between mb-3">
-    <span class=" p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input pInputText type="text" placeholder="Recherche..."
-            (input)="dt.filterGlobal($event.target.value, 'contains')" />
-    </span>
-</div>
-<!-- Table -->
+
 <div class="card">
-    <p-table #dt [globalFilterFields]="['matricule','prenom','nom', 'etat', 'busId']" [value]="listChauffeur()"
-        [tableStyle]="{ 'min-width': '50rem' }" [rows]="10" [paginator]="true">
+    <div class="  flex-auto justify-end mb-3">
+
+        <div class="flex ">
+            <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                    placeholder="Recherche..." />
+            </p-iconfield>
+        </div>
+
+    </div>
+    <p-table #dt [globalFilterFields]="['matricule','prenom','nom', 'etat', 'age']" [value]="listChauffeur()"
+        [tableStyle]="{ 'min-width': '50rem' }" [rows]="10" [paginator]="true" showGridlines>
         <ng-template #header>
             <tr>
-                <!-- <th>Id</th>-->
-                <th pSortableColumn="matricle">Matricule
-                    <p-sortIcon field="matricle"></p-sortIcon>
+                <th pSortableColumn="matricule">Matricule
+                    <p-sortIcon field="matricule"></p-sortIcon>
                 </th>
-                <th pSortableColumn="prenom">prenom
+                <th pSortableColumn="prenom">Prénom
                     <p-sortIcon field="prenom"></p-sortIcon>
                 </th>
-                <th pSortableColumn="nom">nom
+                <th pSortableColumn="nom">Nom
                     <p-sortIcon field="nom"></p-sortIcon>
                 </th>
-                <th pSortableColumn="age">age
+                <th pSortableColumn="age">Age
                     <p-sortIcon field="age"></p-sortIcon>
                 </th>
-                <th pSortableColumn="Etat">Etat
-                    <p-sortIcon field="Etat"></p-sortIcon>
+                <th pSortableColumn="etat">Etat
+                    <p-sortIcon field="etat"></p-sortIcon>
                 </th>
-                <th pSortableColumn="busId">busId
-                    <p-sortIcon field="busId"></p-sortIcon>
-                </th>
+                <!-- <th pSortableColumn="matricleBus">matricleBus
+                    <p-sortIcon field="matricleBus"></p-sortIcon>
+                </th>-->
                 <th>Actions</th>
             </tr>
-            <!-- Filter row-->
-            <tr>
-                <th>
-                    <p-columnFilter type="text" field="busId" display="menu"></p-columnFilter>
 
-                </th>
-                <th>
-                    <p-columnFilter type="text" field="matricule" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="Etat" field="etat" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="text" field="nom" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="text" field="prenom" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="text" field="age" display="menu"></p-columnFilter>
-
-                </th>
-            </tr>
 
         </ng-template>
         <ng-template #body let-chauffeur>
             <tr>
-                <!-- <td>{{ chauffeur.id }}</td>-->
                 <td>{{ chauffeur.matricule }}</td>
                 <td>{{ chauffeur.nom }}</td>
                 <td>{{ chauffeur.prenom }}</td>
                 <td>{{ chauffeur.age }}</td>
-
                 <td>{{ chauffeur.etat }}</td>
-                <td>{{ chauffeur.busId }}</td>
+                <!-- <td>{{ chauffeur.bus?.matricule }}</td> -->
                 <td>
-                    <!-- <p-button label="Edit" icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"></p-button> -->
                     <p-button icon="pi pi-pencil" [rounded]="true" severity="info" [outlined]="true" class="mr-2"
                         (onClick)="showUpdateDialog(chauffeur)" />
                     <p-button icon="pi pi-trash" [rounded]="true" severity="danger" [outlined]="true"
@@ -87,17 +62,17 @@
             </tr>
 
         </ng-template>
-        <ng-template #emptymessage>
+        <!--<ng-template #emptymessage>
             <tr>
                 <td [attr.colspan]="cols?.length">No data found.</td>
             </tr>
-        </ng-template>
+        </ng-template>-->
     </p-table>
 </div>
 <!-- Dialogs -->
 
 <p-dialog header="Ajouter un chauffeur" [modal]="true" [(visible)]="displayCreateDialog" [style]="{ width: '25rem' }">
-    <span class="p-text-secondary block mb-8"> ajouter votre information</span>
+
     <form [formGroup]="chauForm">
         <div class="grid grid-cols-3 items-center mb-4">
             <label for="mat" class="font-semibold ">Matricule</label>
@@ -107,6 +82,10 @@
             @if(chauForm.get('matricule')?.invalid && chauForm.get('matricule')?.touched){
             <small class="text-red-500 col-span-3">
                 Matricule obligatoire
+            </small>}
+            @if(chauForm.get('matricule')?.errors?.['matriculeNotInCPG']){
+            <small class="text-red-500 col-span-3">
+                Matricule non trouvé dans le CPG
             </small>}
         </div>
         <div class="grid grid-cols-3 items-center mb-4">
@@ -139,13 +118,11 @@
     </form>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="displayCreateDialog = false" />
-        <p-button [disabled]="chauForm.invalid" label="Save" (click)="createChauffeur()" />
+        <p-button [disabled]="chauForm.invalid || chauForm.pending" label="Save" (click)="createChauffeur()" />
     </div>
 </p-dialog>
 
 <p-dialog header="Modifier un chauffeur" [modal]="true" [(visible)]="displayUpdateDialog" [style]="{ width: '25rem' }">
-    <span class="p-text-secondary block mb-8">Update your information.</span>
-
     <div class="grid grid-cols-3 items-center  mb-4">
         <label for="mat" class="font-semibold ">Matricule</label>
         <input pInputText id="mat" class="col-span-2" [(ngModel)]="modChauffeur.matricule" autocomplete="off" />
@@ -160,24 +137,20 @@
     </div>
     <div class="grid grid-cols-3 items-center  mb-4">
         <label for="etat" class="font-semibold ">Etat</label>
-        <!-- <input pInputText id="etat" class="flex-auto" [(ngModel)]="modChauffeur.etat" autocomplete="off" /> -->
         <p-select [options]="lisEtatChauffeur" [(ngModel)]="modChauffeur.etat" placeholder="Choisir etat"
-            class="w-full md:w-56 col-span-2" />
+            class=" col-span-2" />
 
     </div>
     <div class="grid grid-cols-3 items-center  mb-4">
         <label for="age" class="font-semibold">Age</label>
         <input pInputText type="number" id="age" class="col-span-2" [(ngModel)]="modChauffeur.age" autocomplete="off" />
     </div>
-    <div class="grid grid-cols-3 items-center  mb-4">
-        <label for="busId" class="font-semibold ">BusId</label>
-        <!--X <input pInputText type="number" id="busId" class="flex-auto" [(ngModel)]="modChauffeur.busId"
-            autocomplete="off" /> -->
-        <!--<p-select [options]="listBus" [(ngModel)]="modChauffeur.busId" placeholder="Choisir bus"
-            class="w-full md:w-56" />-->
+    <!-- <div class="grid grid-cols-3 items-center  mb-4">
+        <label for="busId" class="font-semibold ">matricleBus</label>
+
         <p-select [options]="listBus()" optionLabel="matricule" optionValue="id" [(ngModel)]="modChauffeur.busId"
             class="col-span-2" placeholder="Choisir bus"></p-select>
-    </div>
+    </div>-->
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="displayUpdateDialog = false" />
         <p-button label="Save" (click)="updateChauffeur()" />

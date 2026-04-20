@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
-import { EtatBus } from '../models/bus.model';
+import { Bus, EtatBus } from '../models/bus.model';
 
 @Component({
-  selector: 'app-approval-card',
+  selector: 'app-bus-container',
   standalone: true,
   imports: [CommonModule, TooltipModule, AvatarModule, ButtonModule, BadgeModule],
   template: `
@@ -30,6 +30,7 @@ import { EtatBus } from '../models/bus.model';
         <div class="divider"></div>
         <div class="label">{{ nomChauffeur }}</div>
       </div>
+    </div>
       <!-- badge etat -->
       <!--<p-badge 
         [value]="etatBus"
@@ -38,15 +39,24 @@ import { EtatBus } from '../models/bus.model';
       <button pButton type="button" label="Mission" 
        icon="pi pi-send" class="p-button-sm mission-btn"></button>-->
        <!--icone info-->
-      <i class="pi pi-info-circle text-red-500 icon-alert" [pTooltip]="tooltipBus" tooltipPosition="right"
+      <i class="pi pi-info-circle text-blue-500 icon-alert" [pTooltip]="tooltipBus" tooltipPosition="right"
       style="cursor:pointer; font-size:18px">
       </i>
        
-    </div>
-   
-  
-
-
+  </div>
+     <!--@if (trajet.length > 0) {
+        <div class="trajet-info">
+         @for (t of trajet; track t.id) {
+          <div >
+            <small>
+              {{ t.depart }} → {{ t.destination }} <br>
+              {{ t.date | date:'HH:mm' }}
+            </small>
+          </div>
+          }
+        </div>
+}-->
+    
 
 <ng-template #tooltipBus>
 
@@ -135,6 +145,16 @@ import { EtatBus } from '../models/bus.model';
       gap: 6px;
       z-index: 1;
     }
+    /*.trajet-info {
+     position: absolute;
+     bottom: 5px;
+     left: 5px;
+     font-size: 10px;
+     color: #000;
+     background: rgba(49, 6, 6, 0.8);
+     padding: 4px;
+     border-radius: 5px;
+}*/
 
     .count {
       font-size: 24px;
@@ -181,13 +201,17 @@ import { EtatBus } from '../models/bus.model';
     }*/
   `]
 })
-export class ApprovalCardComponent {
+export class BusContainerComponent {
   @Input() matricule: string = "0";
   @Input() nomChauffeur: string = 'مراسلات للمصادقة';
   @Input() etatBus: EtatBus = EtatBus.Disponible
+  @Input() bus!: Bus;
+
+  @Output() busClicked = new EventEmitter<Bus>();
   //action when clicked
   onClick() {
     console.log("clicked", this.matricule, this.nomChauffeur);
+    this.busClicked.emit(this.bus);
   }
 
 }

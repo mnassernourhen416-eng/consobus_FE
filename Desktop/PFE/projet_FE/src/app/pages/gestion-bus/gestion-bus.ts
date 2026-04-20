@@ -4,13 +4,15 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from "primeng/button";
 import { DialogModule } from 'primeng/dialog';
+import { IconField } from "primeng/iconfield";
+import { InputIcon } from "primeng/inputicon";
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { BusService } from '../service/bus.service';
 @Component({
   selector: 'app-gestion-bus',
-  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, SelectModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, SelectModule, ReactiveFormsModule, IconField, InputIcon],
   templateUrl: './gestion-bus.html',
   styleUrl: './gestion-bus.scss',
 })

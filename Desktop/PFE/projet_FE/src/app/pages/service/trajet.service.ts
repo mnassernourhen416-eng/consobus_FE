@@ -13,7 +13,7 @@ export class TrajetService {
     getAllTrajet(): Observable<Trajet[]> {
         return this.http.get<Trajet[]>(`${this.apiUrl}/trajet/all`);
     }
-    createTrajet(trajet: Trajet): Observable<Trajet> {
+    createTrajet(trajet: Partial<Trajet>): Observable<Trajet> {
         return this.http.post<Trajet>(`${this.apiUrl}/trajet`, trajet);
     }
 

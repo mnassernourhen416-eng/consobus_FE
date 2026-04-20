@@ -16,6 +16,9 @@ export class BusService {
     getAllBus(): Observable<Bus[]> {
         return this.http.get<Bus[]>(`${this.apiUrl}/bus/all`);
     }
+    getAllBusWithtrajets(): Observable<Bus[]> {
+        return this.http.get<Bus[]>(`${this.apiUrl}/bus/all-with-trajets`);
+    }
     createBus(bus: Bus): Observable<Bus> {
         return this.http.post<Bus>(`${this.apiUrl}/bus`, bus);
     }

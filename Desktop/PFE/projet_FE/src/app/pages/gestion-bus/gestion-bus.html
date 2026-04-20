@@ -3,28 +3,34 @@
     <p-button label="Ajouter bus" icon="pi pi-plus" class="p-button-success mb-3"
         (click)="displayCreateDialog=true"></p-button>
 </div>
-<!--recherche-->
-<div class=" flex justify-between mb-3">
-    <span class=" p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input pInputText type="text" placeholder="Recherche..."
-            (input)="dt.filterGlobal($event.target.value, 'contains')" />
-    </span>
-</div>
+
 <!-- Table -->
 <div class="card">
-    <p-table #dt [globalFilterFields]="['matricule','Model','Fabricant', 'etat', 'busClass']" [value]="listBus()"
-        [tableStyle]="{ 'min-width': '50rem' }" [rows]="9" [paginator]="true">
+    <div class="  flex-auto justify-end mb-3">
+
+        <div class="flex ">
+            <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                    placeholder="Recherche..." />
+            </p-iconfield>
+        </div>
+
+    </div>
+    <p-table #dt [globalFilterFields]="['matricule','model','fabricant', 'etat', 'busClass']" [value]="listBus()"
+        [tableStyle]="{ 'min-width': '50rem' }" [rows]="9" [paginator]="true" showGridlines>
         <ng-template #header>
             <tr>
-                <th pSortableColumn="matricle">Matricule
-                    <p-sortIcon field="matricle"></p-sortIcon>
+                <th pSortableColumn="matricule">Matricule
+                    <p-sortIcon field="matricule"></p-sortIcon>
                 </th>
-                <th pSortableColumn="Model">Model
-                    <p-sortIcon field="Model"></p-sortIcon>
+                <th pSortableColumn="model">Model
+                    <p-sortIcon field="model"></p-sortIcon>
                 </th>
-                <th pSortableColumn="Fabricant">Fabricant
-                    <p-sortIcon field="Fabricant"></p-sortIcon>
+                <th pSortableColumn="fabricant">Fabricant
+                    <p-sortIcon field="fabricant"></p-sortIcon>
                 </th>
                 <th pSortableColumn="etat">Etat
                     <p-sortIcon field="etat"></p-sortIcon>
@@ -33,29 +39,6 @@
                     <p-sortIcon field="busClass"></p-sortIcon>
                 </th>
                 <th>Actions</th>
-            </tr>
-            <!-- Filter row-->
-            <tr>
-                <th>
-                    <p-columnFilter type="text" field="Model" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="text" field="matricule" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="Etat" field="etat" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="text" field="Fabricant" display="menu"></p-columnFilter>
-
-                </th>
-                <th>
-                    <p-columnFilter type="text" field="busClass" display="menu"></p-columnFilter>
-
-
             </tr>
         </ng-template>
         <ng-template #body let-bus>

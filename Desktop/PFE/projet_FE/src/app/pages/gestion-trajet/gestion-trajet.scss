@@ -18,3 +18,14 @@
     color: white; 
     text-shadow: 2px 2px 4px black; 
 }
+.bus-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+button.p-button:disabled {
+  background-color: #ccc !important;
+  border-color: #ccc !important;
+  color: #666 !important;
+}

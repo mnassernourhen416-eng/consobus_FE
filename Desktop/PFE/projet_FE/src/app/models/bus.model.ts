@@ -16,6 +16,7 @@ import { Consommation } from './consommation.model';
 import { Trajet } from './trajet.model';
 
 export interface Bus {
+  EtatBus: any;
   id: number;
   model: string;
   fabricant: string;

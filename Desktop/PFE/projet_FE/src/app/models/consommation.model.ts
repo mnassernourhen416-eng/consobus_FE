@@ -1,9 +1,9 @@
 // consommation.model.ts
 
 export enum TypeConsommation {
-  semaine = 'semaine',
-  mois = 'mois',
-  jour = "jour"
+  semaine = 'Semaine',
+  mois = 'Mois',
+  jour = "Jour"
 }
 // adapte selon ton enum Prisma "type"
 

@@ -3,18 +3,22 @@ import { Bus } from '@/app/models/bus.model';
 import { Chauffeur, EtatChauffeur } from '@/app/models/chauffeur.model';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from "primeng/button";
 import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
+import { IconField } from "primeng/iconfield";
+import { InputIcon } from "primeng/inputicon";
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
+import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { BusService } from '../service/bus.service';
 import { ChauffeurService } from '../service/chauffeur.service';
 @Component({
   selector: 'app-gestion-chauffeur',
-  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, SelectModule, DataViewModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, SelectModule, DataViewModule, ReactiveFormsModule, IconField, InputIcon],
   templateUrl: './gestion-chauffeur.html',
   styleUrl: './gestion-chauffeur.scss',
 })
@@ -41,8 +45,9 @@ export class GestionChauffeur {
   chauForm!: FormGroup;
   ngOnInit() {
 
+
     this.chauForm = this.fb.group({
-      matricule: [null, Validators.required],
+      matricule: [null, [Validators.required], [this.cpgMatiriculeValidator()]],
       prenom: [null, Validators.required],
       nom: [null, Validators.required],
       age: [null, [Validators.required, Validators.min(18)]]
@@ -70,6 +75,18 @@ export class GestionChauffeur {
       }
     });
 
+  }
+  cpgMatiriculeValidator(): AsyncValidatorFn {
+    return (control: AbstractControl) => {
+      if (!control.value) {
+        return of(null); // No value, so no error
+      }
+      return this.chauffeurService.checkCPGMatricule(control.value).pipe(map(res => (res.exists ? null :
+        { matriculeNotInCPG: true }
+      )),
+        catchError(() => of(null)) // In case of error, consider it valid
+      );
+    };
   }
   createChauffeur() {
     if (this.chauForm.invalid) {
@@ -105,7 +122,7 @@ export class GestionChauffeur {
     if (this.modChauffeur.id && this.modChauffeur.nom
       && this.modChauffeur.prenom && this.modChauffeur.matricule
       && this.modChauffeur.age && this.modChauffeur.etat) {
-      this.modChauffeur.busId = Number(this.modChauffeur.busId);
+
 
       console.log("this.modChauffeur: ", this.modChauffeur);
 
