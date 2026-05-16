@@ -1,0 +1,108 @@
+
+  .app-approval-card{
+    display: flex;
+    flex-direction:row-reverse;
+  }
+    :host {
+      display: block;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .approval-card {
+      display: grid;
+      
+      margin-top: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+      position: relative;
+      width: 150px;
+      height: 150px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 16px;
+      box-sizing: border-box;
+      cursor: pointer;
+      :hover {
+        background: var(--p-primary-200);
+      /* transform:translateY(-6px);
+       box-shadow:0 8px 25px rgba(0,0,0,0.15); */
+      }
+    }
+
+    .bus-image {
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      width: 100px;
+      height: 100px;
+      opacity: 0.2;
+      pointer-events: none;
+
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      z-index: 1;
+    }
+    /*.trajet-info {
+     position: absolute;
+     bottom: 5px;
+     left: 5px;
+     font-size: 10px;
+     color: #000;
+     background: rgba(49, 6, 6, 0.8);
+     padding: 4px;
+     border-radius: 5px;
+}*/
+
+    .count {
+      font-size: 24px;
+      font-weight: 700;
+      color: #000000;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: #686868;
+      border-radius: 1px;
+    }
+
+    .label {
+      font-size: 10px;
+      color: #000000;
+      font-weight: 500;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+  
+    .tooltip-bus { background: #5b4e8a;
+         padding: 10px;
+          border-radius: 10px;
+          font-size: 10px; 
+        } 
+    .icon-alert {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      color: #d80f0f;
+      cursor: pointer;
+    }  
+   .avatar{
+      width: 20px;
+      height: auto;
+    } 
+
+  

@@ -28,7 +28,7 @@ import { AppConfigurator } from './app.configurator';
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
                 <div class="relative">
-                    <button
+                    <!-- <button
                         class="layout-topbar-action layout-topbar-action-highlight"
                         pStyleClass="@next"
                         enterFromClass="hidden"
@@ -38,7 +38,7 @@ import { AppConfigurator } from './app.configurator';
                         [hideOnOutsideClick]="true"
                     >
                         <i class="pi pi-palette"></i>
-                    </button>
+                    </button> -->
                     <app-configurator />
                 </div>
             </div>
@@ -49,7 +49,7 @@ import { AppConfigurator } from './app.configurator';
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action">
+                   <!-- <button type="button" class="layout-topbar-action">
                         <i class="pi pi-calendar"></i>
                         <span>Calendar</span>
                     </button>
@@ -60,7 +60,7 @@ import { AppConfigurator } from './app.configurator';
                     <button type="button" class="layout-topbar-action" >
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
-                    </button>
+                    </button>-->
                     <button type="button" class="layout-topbar-action" (click)="logoutAction()">
                         <i class="pi pi-power-off"></i>
                         <span>Logout</span>

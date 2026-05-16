@@ -23,6 +23,8 @@ export class BusService {
         return this.http.post<Bus>(`${this.apiUrl}/bus`, bus);
     }
 
+
+
     //get bus by id   
     getBusById(id: number): Observable<Bus> {
         return this.http.get<Bus>(`${this.apiUrl}/bus/${id}`);
@@ -38,6 +40,10 @@ export class BusService {
     updateBus(id: number, bus: Bus): Observable<Bus> {
         return this.http.patch<Bus>(`${this.apiUrl}/bus/${id}`, bus);
     }
+    getBusEtat(): Observable<Bus> {
+        return this.http.get<Bus>(`${this.apiUrl}/bus/bus-etat`);
+    }
+
     //delete bus
     removeBus(id: number, bus: Bus) {
         return this.http.delete(`${this.apiUrl}/bus/${id}`)

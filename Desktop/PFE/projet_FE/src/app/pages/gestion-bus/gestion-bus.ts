@@ -117,19 +117,19 @@ export class GestionBus {
 
   removeBus() {
 
-    if (this.supbus.id) {   // ✅ on vérifie seulement id
+    if (this.supbus.id) {
 
       this.busService.removeBus(this.supbus.id, this.supbus as Bus).subscribe({
         next: () => {
           console.log('Bus deleted');
 
-          // Supprimer le bus du signal (IMPORTANT)
+
           this.listBus.update(buses =>
             buses.filter(b => b.id !== this.supbus.id)
           );
 
           this.displayDeleteDialog = false;
-          this.supbus = {}; // reset
+          this.supbus = {};
         },
 
         error: (error) => {

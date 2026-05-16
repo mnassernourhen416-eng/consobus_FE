@@ -1,28 +1,34 @@
 
 import { BusContainerComponent } from "@/app/components/bus-container.component";
 import { Bus, EtatBus } from "@/app/models/bus.model";
+import { Chauffeur, EtatChauffeur } from "@/app/models/chauffeur.model";
 import { Trajet, Ville } from '@/app/models/trajet.model';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AutoCompleteModule } from "primeng/autocomplete";
 import { Button } from "primeng/button";
 import { DialogModule } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { BusService } from "../service/bus.service";
+import { ChauffeurService } from '../service/chauffeur.service';
 import { TrajetService } from '../service/trajet.service';
 @Component({
   selector: 'app-gestion-trajet',
-  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, BusContainerComponent, ReactiveFormsModule, SelectModule],
+  imports: [CommonModule, FormsModule, Button, TableModule, DialogModule, InputText, BusContainerComponent, ReactiveFormsModule, SelectModule, AutoCompleteModule],
   templateUrl: './gestion-trajet.html',
   styleUrl: './gestion-trajet.scss',
 })
 export class GestionTrajet {
   private trajetService = inject(TrajetService);
+  private chauffeurService = inject(ChauffeurService);
   listTrajet = signal<Trajet[]>([]);
   listBus = signal<Bus[]>([]);
+  listBusWithTrajetandChaufeur = signal<Bus[]>([]);
   listVille = Object.values(Ville);
+  listChauffeur = signal<Chauffeur[]>([]);
   EtatBus = EtatBus;
   displayCreateDialog: boolean = false;
   displayUpdateDialog = signal(false);
@@ -32,6 +38,10 @@ export class GestionTrajet {
   suptrajet: Partial<Trajet> = {};
   selectedBus?: Bus;
   modTrajet!: FormGroup;
+  filteredChauffeurs: any[] = [];
+  selectedChauffeur?: Chauffeur;
+  nomPrenomChauffeur: string = '';
+  arriverDialog = false;
   //constructor(private fb: FormBuilder) { }
   private busService = inject(BusService)
   // Sample distances between cities (in km) use enum Ville
@@ -50,17 +60,41 @@ export class GestionTrajet {
   kilometrage: number = 0;
 
   ngOnInit() {
-    this.getAllBus();
+    this.getAllBusWithtrajets();
+    this.getAllChauffeurs();
   }
   // showCreateTrajetDialog() {
   //   this.displayCreateDialog = true;
   // }
-
-  getAllBus() {
+  getAllChauffeurs() {
+    this.chauffeurService.getAllChauffeur().subscribe({
+      next: (response) => {
+        //filter the chauffeurs with etat = disponible
+        const availableChauffeurs = response.filter(chauffeur => chauffeur.etat === EtatChauffeur.Libre);
+        this.listChauffeur.set(availableChauffeurs);
+        // console.log('All Chauffeurs:', response);
+      },
+      error: (error) => { console.error('Failed to fetch chauffeurs:', error); }
+    });
+  }
+  showNomPrenom(event: any) {
+    this.nomPrenomChauffeur = this.selectedChauffeur ? `${this.selectedChauffeur.prenom} ${this.selectedChauffeur.nom}` : '';
+  }
+  getAllBusWithtrajets() {
     this.busService.getAllBusWithtrajets().subscribe({
       next: (response) => {
         this.listBus.set(response);
-        console.log('All Bus:', response);
+        console.log('All Bus with trajets:', response);
+        // filter the bus with trajet with date today and chauffeur
+        const today = new Date().toISOString().split('T')[0];
+        const filteredBus = response.filter(bus => bus.trajet && bus.trajet.some(trajet => {
+          const trajetDate = new Date(trajet.date).toISOString().split('T')[0];
+          return trajetDate === today;
+        }));
+        this.listBusWithTrajetandChaufeur.set(filteredBus);
+        console.log('Filtered Buses with trajets today:', filteredBus);
+
+
       },
       error: (error) => {
         console.error('Failed to fetch buses:', error);
@@ -109,20 +143,38 @@ export class GestionTrajet {
 
 
   }
+  searchChauffeurs(event: any) {
+    if (!this.newTrajet.date) {
+      alert('choisir une date pour filtrer les chauffeurs disponibles');
+      return;
+    }
+    this.trajetService.getAvailableChauffeurs(event.query, this.newTrajet.date?.toISOString().split('T')[0]).subscribe({
+      next: (response) => {
+        this.filteredChauffeurs = response;
+      },
+      error: (error) => {
+        console.error('Failed to fetch chauffeurs:', error);
+      }
+    });
+  }
   createTrajet() {
     console.log("newTrajet =", this.newTrajet);
-    if (this.depart && this.destination && this.newTrajet.date && this.newTrajet.kilometrage && this.selectedBus) {
-      const payload: Partial<Trajet> = this.newTrajet = {
-        busId: Number(this.selectedBus.id),
-        kilometrage: Number(this.newTrajet.kilometrage),
-        depart: this.depart,
-        destination: this.destination,
-        date: new Date(this.newTrajet.date as any),
+    if (this.depart && this.destination && this.newTrajet.date && this.newTrajet.kilometrage && this.selectedBus && this.selectedChauffeur) {
+      const payload: { trajet: Partial<Trajet>, chauffeurId: number } = {
+        trajet: {
+          busId: Number(this.selectedBus.id),
+          kilometrage: Number(this.newTrajet.kilometrage),
+          depart: this.depart,
+          destination: this.destination,
+          date: new Date(this.newTrajet.date),
+        },
+        chauffeurId: Number(this.selectedChauffeur.id),
+        // chauffeur: this.selectedChauffeur.matricule ,
       };
 
       console.log("Payload envoyé:", payload);
-      console.log("Types:", typeof payload.busId);
-      this.trajetService.createTrajet(payload).subscribe({
+      // console.log("Types:", typeof payload.busId);
+      this.trajetService.createTrajetWithChauffeur(payload).subscribe({
         next: (response) => {
           console.log('TRAJET created:', response);
           this.listTrajet.update(trajets => [...trajets,
@@ -135,14 +187,22 @@ export class GestionTrajet {
           this.depart = '';
           this.destination = '';
           this.selectedBus = undefined;
+          this.selectedChauffeur = undefined;
+          this.displayCreateDialog = false;
+          this.getAllBusWithtrajets();
+          this.getAllChauffeurs(); // Refresh bus list to show the new trajet
         },
         error: (error) => {
           console.error('Failed to create consommation:', error);
+          this.displayCreateDialog = false
+
         }
       });
     } else {
       console.warn('Please fill in all required fields');
     }
+    this.displayCreateDialog = false;
+
   }
 
   showUpdateDialog(trajet: Trajet) {
@@ -188,14 +248,30 @@ export class GestionTrajet {
     this.displayCreateDialog = true;
   }
 
-  /*getTrajetByBusAndDate(bus: Bus): Trajet[] {
-    if (!bus.trajet) {
-      return [];
-    }
-    return bus.trajet.filter(trajet => {
-      const trajetDate = new Date(trajet.date).toISOString().split('T')[0];
-      const selectedDate = new Date(this.selectedDate);
+  showArriverDialog(bus: Bus) {
+    this.selectedBus = bus;
+    this.arriverDialog = true;
+  }
+  TerminerTrajet() {
 
-    });
-  }*/
+    if (this.selectedBus && this.selectedBus.trajet && this.selectedBus.trajet.length > 0 && this.selectedBus.chauffeur) {
+      const busId = this.selectedBus.id;
+      const chauffeurId = this.selectedBus.chauffeur.id;
+      this.trajetService.terminerTrajet({ busId, chauffeurId }).subscribe({
+        next: (response) => {
+          console.log('Trajet terminated:', response);
+          this.getAllBusWithtrajets();
+          this.getAllChauffeurs();
+          this.arriverDialog = false;
+        },
+        error: (error) => {
+          console.error('Failed to terminate trajet:', error);
+        }
+      });
+    }
+    else {
+      console.error('No trajet found for the selected bus');
+    }
+  }
+
 }

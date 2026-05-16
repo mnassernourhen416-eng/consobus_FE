@@ -1,0 +1,75 @@
+<div class="app-approval-card">
+  <div class="approval-card mr-1 mb-1" (click)="onClick()">
+
+    <!-- Background watermark checkmark -->
+    <div class="bus-image ">
+      <img src="/images/bus.png" alt="">
+    </div>
+
+    <div class="flex flex-col gap-2 items-center">
+      <div class="count">{{ matricule }}</div>
+      @if (bus.etat=="EnService") {
+      <div class="flex flex-col items-center">
+        <div class="card-content">
+
+          <!--<div class="count">{{ matricule }}</div>-->
+          <div class="divider"></div>
+        </div>
+        <div class="flex gap-2 items-center justify-right mt-2">
+          <div class="text-sm font-semibold">{{ bus.chauffeur?.prenom }} {{ bus.chauffeur?.nom }}</div>
+          <p-avatar size="large" class="avatar" shape="circle">
+            <img src="/images/man.png" alt="chauffeur">
+          </p-avatar>
+        </div>
+
+      </div>
+      }
+      <!-- compare the day of bus.trajet[0].date with the day of today. if they are the same, show the trajet info -->
+
+      @if(bus.trajet && bus.trajet.length > 0 && bus.etat && bus.etat === "EnService") {
+      <div>
+        <!-- get last trajet -->
+        <div class="trajet-info">
+          <small>
+            {{ bus.trajet[0].depart }} → {{ bus.trajet[0].destination }} <br>
+            {{ bus.trajet[0].date | date:'HH:mm' }}
+          </small>
+        </div>
+      </div>
+      }
+    </div>
+
+  </div>
+  <i class="pi pi-info-circle text-blue-500 icon-alert" [pTooltip]="tooltipBus" tooltipPosition="right"
+    style="cursor:pointer; font-size:18px">
+  </i>
+</div>
+
+
+<ng-template #tooltipBus>
+
+  <div class="tooltip-bus">
+
+    <b>Informations Bus</b>
+
+    <table>
+      <tr>
+        <td>Matricule</td>
+        <td>{{matricule}}</td>
+      </tr>
+
+      <tr>
+        <td>Chauffeur</td>
+        <td>{{nomChauffeur}}</td>
+      </tr>
+
+      <tr>
+        <td>Etat</td>
+        <td>{{bus.etat}}</td>
+      </tr>
+
+    </table>
+
+  </div>
+
+</ng-template>

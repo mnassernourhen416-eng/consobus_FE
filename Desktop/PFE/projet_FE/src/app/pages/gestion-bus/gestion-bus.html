@@ -63,7 +63,7 @@
 <!-- Ajouter Bus -->
 
 <p-dialog header="Ajouter un bus" [modal]="true" [(visible)]="displayCreateDialog" [style]="{ width: '25rem' }">
-    <span class="p-text-secondary block mb-8">Update your information.</span>
+
     <form [formGroup]="busForm">
         <div class="grid grid-cols-3 items-center mb-4">
             <label for="mat" class="font-semibold ">Matricule</label>
@@ -107,7 +107,7 @@
 </p-dialog>
 <!-- Modifier Bus -->
 <p-dialog header="Modifier un bus" [modal]="true" [(visible)]="displayUpdateDialog" [style]="{ width: '25rem' }">
-    <span class="p-text-secondary block mb-8">Update your information.</span>
+
     <div class="grid grid-cols-3 items-center mb-4">
         <label for="mat" class="font-semibold ">Matricule</label>
         <input pInputText id="mat" class="col-span-2" [(ngModel)]="modbus.matricule" autocomplete="off" />

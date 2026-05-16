@@ -1,4 +1,36 @@
 <h2>Gestion des trajets</h2>
+
+
+
+<div class="app-approval-card" style="display:grid; grid-template-columns: repeat(4,1fr); gap:20px;">
+    @for (bus of listBus(); track $index) {
+    <!-- filter -->
+    <div class="flex flex-col gap-2 justify-center items-center">
+        <app-bus-container [matricule]="bus.matricule" [bus]="bus"
+            (busClicked)="showCreateTrajetDialog($event)"></app-bus-container>
+        @if(bus.etat === "EnService") {
+        <div>
+            <p-button label="Arriver" icon="pi pi-check" severity="primary"
+                (click)=" showArriverDialog(bus)"></p-button>
+        </div>
+        }
+
+    </div>
+
+    }
+
+
+</div>
+
+<p-dialog header="Terminer trajet, Bus:  {{selectedBus?.matricule}}" [modal]="true" [(visible)]="arriverDialog"
+    [style]="{ width: '25rem' }">
+
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="arriverDialog = false" />
+        <p-button label="Terminer" (click)="TerminerTrajet()" />
+    </div>
+</p-dialog>
+
 <p-dialog header="Ajouter un trajet:  {{selectedBus?.matricule}}" [modal]="true" [(visible)]="displayCreateDialog"
     [style]="{ width: '25rem' }" (visibleChange)="displayUpdateDialog.set($event)">
 
@@ -6,6 +38,20 @@
         <label for="date" class="font-semibold w-24">Date</label>
         <input pInputText type="datetime-local" id="date" name="date" class="flex-auto" [(ngModel)]="newTrajet.date"
             autocomplete="off" required />
+    </div>
+    <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-4">
+            <div class="flex align-items-center flex-auto">
+                <label for="chaffeur" class="font-semibold w-24">Chauffeur</label>
+
+
+                <p-select class="flex-auto" [options]="listChauffeur()" optionLabel="matricule"
+                    placeholder="Choisir matricule" [(ngModel)]="selectedChauffeur" appendTo="body"
+                    (onChange)="showNomPrenom($event)">
+                </p-select>
+            </div>
+        </div>
+        <span class=" text-primary  text-lg block ps-24 mb-4"> <b>{{nomPrenomChauffeur}}</b></span>
     </div>
     <div class="flex items-center gap-4 mb-8">
         <label for="Départ" class="font-semibold w-24">Depart</label>
@@ -32,22 +78,10 @@
 </p-dialog>
 
 
-<p-dialog header="Supprimer un trajet" [modal]="true" [(visible)]="displayDeleteDialog" [style]="{ width: '25rem' }">
-    <span class="p-text-secondary block mb-8">Voulez-vous vraiment supprimer ce trajet ?</span>
+<p-dialog header="Terminer un trajet" [modal]="true" [(visible)]="displayDeleteDialog" [style]="{ width: '25rem' }">
+    <span class="p-text-secondary block mb-8">Voulez-vous vraiment terminer ce trajet ?</span>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="displayDeleteDialog.set(false)" />
         <p-button label="remove" (click)="removeTrajet()" severity="danger" />
     </div>
 </p-dialog>
-
-
-
-<div class="app-approval-card" style="display:grid; grid-template-columns: repeat(4,1fr); gap:20px;">
-    @for (bust of listBus(); track $index) {
-    <app-bus-container [matricule]="bust.matricule" [bus]="bust" nomChauffeur="" EtatBus="Disponible"
-        (busClicked)="showCreateTrajetDialog($event)"></app-bus-container>
-
-    }
-
-
-</div>

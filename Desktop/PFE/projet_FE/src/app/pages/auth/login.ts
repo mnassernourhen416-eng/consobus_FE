@@ -37,15 +37,17 @@ import { AuthService } from '../service/auth.service';
                                     />
                                 </g>
                             </svg>-->
-                            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Welcome !</div>
-                            <span class="text-muted-color font-medium">Sign in to continue</span>
+                            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">
+                                <img src="/images/CPG.png" alt="Image" class="mb-4 w-19 shrink-0 mx-auto" style="width: 200px; height: 200px;" />
+                            </div>
+                            <!-- <span class="text-muted-color font-medium">Sign in to continue</span> -->
                         </div>
 
                         <div>
                             <label for="matricule" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Matricule</label>
                             <input pInputText id="matricule" type="text" placeholder="Matricule" class="w-full md:w-120 mb-8" [(ngModel)]="matricule" />
 
-                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
+                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">mot de passe</label>
                             <p-password id="password1" [(ngModel)]="password" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
 
                             <!-- <div class="flex items-center justify-between mt-2 mb-8 gap-8">
@@ -55,7 +57,7 @@ import { AuthService } from '../service/auth.service';
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                             </div> -->
-                            <p-button  label="Sign In" styleClass="w-full mt-8" (onClick)="SignIn()"></p-button>
+                            <p-button  label="Se connecter" styleClass="w-full mt-8" (onClick)="SignIn()"></p-button>
                         </div>
                     </div>
                 </div>

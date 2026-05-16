@@ -2,7 +2,7 @@
 import { Bus } from '@/app/models/bus.model';
 import { Consommation, TypeConsommation } from '@/app/models/consommation.model';
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from "primeng/button";
 import { DataViewModule } from 'primeng/dataview';
@@ -34,7 +34,7 @@ export class GestionConsommation {
 
   // A temporary map to hold new values keyed by bus id
   newConsommationMap: { [busId: number]: number } = {};
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) { }
   private consommationService = inject(ConsommationService)
   private busService = inject(BusService)
 
@@ -165,7 +165,9 @@ export class GestionConsommation {
         this.newConsommation = {}; // Reset form
         this.consForm.reset();
         this.getAllConsommation();
+
         this.loadBusConsommationinTable();
+        this.cdr.detectChanges();
       },
 
       error: (error) => {

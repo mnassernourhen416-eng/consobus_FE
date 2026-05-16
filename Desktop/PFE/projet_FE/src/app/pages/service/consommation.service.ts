@@ -39,5 +39,9 @@ export class ConsommationService {
     removeConsommation(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/consommation/${id}`);
     }
+    getTopConsommation(): Observable<Consommation[]> {
+        return this.http.get<Consommation[]>(`${this.apiUrl}/consommation/top-consommation`);
+    }
+
 }
 
