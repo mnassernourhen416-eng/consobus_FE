@@ -3,6 +3,7 @@ import { BusContainerComponent } from "@/app/components/bus-container.component"
 import { Bus, EtatBus } from "@/app/models/bus.model";
 import { Chauffeur, EtatChauffeur } from "@/app/models/chauffeur.model";
 import { Trajet, Ville } from '@/app/models/trajet.model';
+import { User } from "@/app/models/user.model";
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,6 +13,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
+import { AuthService } from "../service/auth.service";
 import { BusService } from "../service/bus.service";
 import { ChauffeurService } from '../service/chauffeur.service';
 import { TrajetService } from '../service/trajet.service';
@@ -24,6 +26,7 @@ import { TrajetService } from '../service/trajet.service';
 export class GestionTrajet {
   private trajetService = inject(TrajetService);
   private chauffeurService = inject(ChauffeurService);
+  private authService = inject(AuthService);
   listTrajet = signal<Trajet[]>([]);
   listBus = signal<Bus[]>([]);
   listBusWithTrajetandChaufeur = signal<Bus[]>([]);
@@ -58,8 +61,9 @@ export class GestionTrajet {
   depart: string = '';
   destination: string = '';
   kilometrage: number = 0;
-
+  currentUser: User | undefined;
   ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
     this.getAllBusWithtrajets();
     this.getAllChauffeurs();
   }

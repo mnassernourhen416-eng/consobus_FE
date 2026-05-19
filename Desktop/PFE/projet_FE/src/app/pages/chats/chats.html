@@ -1,0 +1,31 @@
+<!-- <p>chats works!</p>
+<div class="chatbot-container p-shadow-4">
+    <div class="chatbot-header p-shadow-2">
+        <h3><i class="pi pi-comments"></i> Chatbot</h3>
+    </div>
+    <p-scrollPanel [style]="{width:'100%',height:'350px'}" styleClass="custombar-1">
+        <div class="chat-message">
+            @for(msg of chatsService.message(); track $index) {
+            <div class="message-wrapper" [className]="msg.role === 'user' ? 'user-align' : 'bot-align'">
+                <div [className]="msg.role === 'user' ? 'msg-user p-component': 'msg-bot p-component'">
+                    {{msg.content}}
+                </div>
+            </div>
+            }
+            @if (chatsService.loading()) {
+            <div class="bot-align">
+                <div class="msg-bot p-component">
+                    <i class="pi pi-spin pi-spinner"></i> Loading...
+                </div>
+            </div>
+            }
+        </div>
+    </p-scrollPanel>
+    <div class="chatbot-input p-inputgroup">
+        <input type="text" pInputText #pInputText placeholder="Poser votre question..." [(ngModel)]="UserMessage"
+            (keydown.enter)="sendMessage()" [disabled]="chatsService.laoding()" />
+        <button pButton type="button" icon="pi pi-send" label="Send" (click)="sendMessage()"
+            [disabled]="chatsService.loading() || !userMessage.trim()">
+        </button>
+    </div>
+</div> -->

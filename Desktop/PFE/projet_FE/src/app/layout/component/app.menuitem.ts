@@ -1,8 +1,9 @@
+import { LayoutService } from '@/app/layout/service/layout.service';
+import { AuthService } from '@/app/pages/service/auth.service';
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { RippleModule } from 'primeng/ripple';
-import { LayoutService } from '@/app/layout/service/layout.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -95,6 +96,8 @@ import { filter } from 'rxjs/operators';
 export class AppMenuitem {
     layoutService = inject(LayoutService);
 
+    currentUser = inject(AuthService).getCurrentUser();
+
     router = inject(Router);
 
     item = input<any>(null);
@@ -103,7 +106,17 @@ export class AppMenuitem {
 
     parentPath = input<string | null>(null);
 
-    isVisible = computed(() => this.item()?.visible !== false);
+    isVisible = computed(() => {
+        const item = this.item();
+        if (item?.visible === false) {
+            return false;
+        }
+        if (!item?.roles) {
+            return true;
+        }
+        return item.roles.includes(this.currentUser?.role) ?? false;
+        //this.item()?.visible !== false
+    });
 
     hasChildren = computed(() => this.item()?.items && this.item()?.items.length > 0);
 

@@ -1,4 +1,5 @@
 import { Bus, BusClass, EtatBus } from '@/app/models/bus.model';
+import { User } from '@/app/models/user.model';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,6 +10,7 @@ import { InputIcon } from "primeng/inputicon";
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
+import { AuthService } from '../service/auth.service';
 import { BusService } from '../service/bus.service';
 @Component({
   selector: 'app-gestion-bus',
@@ -20,6 +22,7 @@ export class GestionBus {
   dt: any;
   constructor(private fb: FormBuilder) { }
   private busService = inject(BusService);
+  private authService = inject(AuthService);
   listBus = signal<Bus[]>([]); //  signal state
   displayCreateDialog: boolean = false;
   displayUpdateDialog: boolean = false;
@@ -32,8 +35,9 @@ export class GestionBus {
   listEtatBus = Object.values(EtatBus)
 
   busForm!: FormGroup;
-
+  currentUser: User | undefined;
   ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
     this.busForm = this.fb.group({
       matricule: [null, Validators.required],
       model: [null, Validators.required],

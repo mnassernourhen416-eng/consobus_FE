@@ -30,12 +30,12 @@ export class TableauBordService {
         return this.http.get<TrajetBus[]>(`${this.apiUrl}/tableaubord/trajets/last-month`);
     }
     getTrajetsStats(count: {
-        type?: 'semaine' | 'mois' | 'annee',
+        type?: string,
         date?: string,
         depart?: string,
         destination?: string,
     }): Observable<TrajetStats> { //type: 'jour' | 'semaine' | 'mois', date?: Date): Observable<TrajetStats> {
-        return this.http.post<TrajetStats>(`${this.apiUrl}/tableaubord/trajets/count`, { count });
+        return this.http.post<TrajetStats>(`${this.apiUrl}/tableaubord/trajets/count`, count);
     }
 
 }

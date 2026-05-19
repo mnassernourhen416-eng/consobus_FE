@@ -38,7 +38,7 @@ import { AuthService } from '../service/auth.service';
                                 </g>
                             </svg>-->
                             <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">
-                                <img src="/images/CPG.png" alt="Image" class="mb-4 w-19 shrink-0 mx-auto" style="width: 200px; height: 200px;" />
+                                <img src="/images/CPG.jpg" alt="" class="mb-4 w-19 shrink-0 mx-auto" style="width: 300px;" />
                             </div>
                             <!-- <span class="text-muted-color font-medium">Sign in to continue</span> -->
                         </div>

@@ -1,6 +1,7 @@
 
 import { Bus } from '@/app/models/bus.model';
 import { Chauffeur, EtatChauffeur } from '@/app/models/chauffeur.model';
+import { User } from '@/app/models/user.model';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,6 +15,7 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { AuthService } from '../service/auth.service';
 import { BusService } from '../service/bus.service';
 import { ChauffeurService } from '../service/chauffeur.service';
 @Component({
@@ -31,6 +33,7 @@ export class GestionChauffeur {
   constructor(private fb: FormBuilder) { }
   private chauffeurService = inject(ChauffeurService);
   private busService = inject(BusService)
+  private authService = inject(AuthService)
   listChauffeur = signal<Chauffeur[]>([]); //  signal state
   displayCreateDialog: boolean = false;
   displayUpdateDialog: boolean = false;
@@ -43,7 +46,9 @@ export class GestionChauffeur {
   lisEtatChauffeur = Object.values(EtatChauffeur);
 
   chauForm!: FormGroup;
+  currentUser: User | undefined;
   ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
 
 
     this.chauForm = this.fb.group({

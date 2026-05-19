@@ -1,10 +1,13 @@
 import { LayoutService } from '@/app/layout/service/layout.service';
+import { User } from '@/app/models/user.model';
+import { AuthService } from '@/app/pages/service/auth.service';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
+
 
 @Component({
     selector: 'app-topbar',
@@ -61,20 +64,28 @@ import { AppConfigurator } from './app.configurator';
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
                     </button>-->
+                    <div class="flex align-center">
+                <h4>{{currentUser?.name}} : </h4>
+                    <h5 style="color:var(--primary-color)">{{currentUser?.role}} </h5>
+                    <!-- <h4>{{currentUser?.matricule}}</h4> -->
                     <button type="button" class="layout-topbar-action" (click)="logoutAction()">
                         <i class="pi pi-power-off"></i>
                         <span>Logout</span>
                     </button>
+                    </div>
+                    
                 </div>
             </div>
         </div>
     </div>`
 })
-export class AppTopbar {
+export class AppTopbar implements OnInit {
     items!: MenuItem[];
+
 
     layoutService = inject(LayoutService);
     router = inject(Router);
+    authService = inject(AuthService);
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({
@@ -82,9 +93,24 @@ export class AppTopbar {
             darkTheme: !state.darkTheme
         }));
     }
+    currentUser: User | undefined;
 
+
+
+    ngOnInit() {
+        //read local storage
+        const user = localStorage.getItem('user');
+        console.log("user:", user);
+
+        if (user) {
+            this.currentUser = JSON.parse(user);
+        }
+    }
     logoutAction() {
         // navigate to auth/login using router
+        this.authService.logout().subscribe((data) =>
+            console.log(data)
+        );
         this.router.navigate(['/auth/login']);
     }
 }

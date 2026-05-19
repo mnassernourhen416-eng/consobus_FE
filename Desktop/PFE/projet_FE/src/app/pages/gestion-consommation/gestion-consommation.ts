@@ -1,6 +1,7 @@
 
 import { Bus } from '@/app/models/bus.model';
 import { Consommation, TypeConsommation } from '@/app/models/consommation.model';
+import { User } from '@/app/models/user.model';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +16,7 @@ import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { AuthService } from '../service/auth.service';
 import { BusService } from '../service/bus.service';
 import { ConsommationService } from '../service/consommation.service';
 
@@ -37,6 +39,7 @@ export class GestionConsommation {
   constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) { }
   private consommationService = inject(ConsommationService)
   private busService = inject(BusService)
+  private authService = inject(AuthService);
 
 
   listConsommation = signal<Consommation[]>([]);
@@ -66,8 +69,10 @@ export class GestionConsommation {
     { name: "Semaine", value: TypeConsommation.semaine },
     { name: "Mois", value: TypeConsommation.mois }
   ]
-  ngOnInit() {
 
+  currentUser: User | undefined;
+  ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
     console.log(this.listTypeConsommation);
 
     this.consForm = this.fb.group({

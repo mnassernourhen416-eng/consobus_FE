@@ -1,8 +1,9 @@
 <h2>Gestion des chauffeurs</h2>
+@if( currentUser?.role!='Directeur'){
 <div class="flex  gap-2">
     <p-button label="Ajouter chauffeur" icon="pi pi-plus" class="p-button-success mb-3"
         (click)="displayCreateDialog=true"></p-button>
-</div>
+</div>}
 
 <div class="card">
     <div class="  flex-auto justify-end mb-3">
@@ -40,7 +41,8 @@
                 <!-- <th pSortableColumn="matricleBus">matricleBus
                     <p-sortIcon field="matricleBus"></p-sortIcon>
                 </th>-->
-                <th>Actions</th>
+                @if( currentUser?.role!='Directeur'){
+                <th>Actions</th>}
             </tr>
 
 
@@ -53,12 +55,13 @@
                 <td>{{ chauffeur.age }}</td>
                 <td>{{ chauffeur.etat }}</td>
                 <!-- <td>{{ chauffeur.bus?.matricule }}</td> -->
+                @if( currentUser?.role!='Directeur'){
                 <td>
                     <p-button icon="pi pi-pencil" [rounded]="true" severity="info" [outlined]="true" class="mr-2"
                         (onClick)="showUpdateDialog(chauffeur)" />
                     <p-button icon="pi pi-trash" [rounded]="true" severity="danger" [outlined]="true"
                         (onClick)="showDleteDialog(chauffeur)" />
-                </td>
+                </td>}
             </tr>
 
         </ng-template>

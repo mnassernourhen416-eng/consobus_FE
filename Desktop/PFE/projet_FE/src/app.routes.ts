@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { JwtGuard } from './app/guards/jwt-auth-guard';
 import { AppLayout } from './app/layout/component/app.layout';
 
 export const appRoutes: Routes = [
@@ -6,9 +7,12 @@ export const appRoutes: Routes = [
         path: '',
         component: AppLayout,
         children: [
-            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
+            {
+                path: 'pages', loadChildren: () => import('./app/pages/pages.routes'),
+                canActivate: [JwtGuard],
+            }
         ]
     },
     { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
-    { path: '**', redirectTo: '/notfound' }
+    { path: '**', redirectTo: '/auth/login' }
 ];

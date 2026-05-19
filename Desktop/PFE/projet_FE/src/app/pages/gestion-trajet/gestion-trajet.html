@@ -21,7 +21,7 @@
 
 
 </div>
-
+@if( currentUser?.role!='Directeur') {
 <p-dialog header="Terminer trajet, Bus:  {{selectedBus?.matricule}}" [modal]="true" [(visible)]="arriverDialog"
     [style]="{ width: '25rem' }">
 
@@ -29,8 +29,8 @@
         <p-button label="Cancel" severity="secondary" (click)="arriverDialog = false" />
         <p-button label="Terminer" (click)="TerminerTrajet()" />
     </div>
-</p-dialog>
-
+</p-dialog>}
+@if( currentUser?.role!='Directeur') {
 <p-dialog header="Ajouter un trajet:  {{selectedBus?.matricule}}" [modal]="true" [(visible)]="displayCreateDialog"
     [style]="{ width: '25rem' }" (visibleChange)="displayUpdateDialog.set($event)">
 
@@ -84,4 +84,4 @@
         <p-button label="Cancel" severity="secondary" (click)="displayDeleteDialog.set(false)" />
         <p-button label="remove" (click)="removeTrajet()" severity="danger" />
     </div>
-</p-dialog>
+</p-dialog>}

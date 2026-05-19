@@ -1,7 +1,8 @@
 <h1>Tableau de bord</h1>
 
-@if (stats) {
+@if (stats ) {
 <div class="grid grid-cols-12 gap-8">
+    @if(currentUser?.role!='Agent'){
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
         <div class="card mb-0">
             <div class="flex justify-between mb-4">
@@ -78,6 +79,7 @@
 
         </div>
     </div>
+    }
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
         <div class="card mb-0">
             <div class="flex justify-between mb-4">
@@ -121,6 +123,7 @@
 
         </div>
     </div>
+    @if (currentUser?.role!='Agent') {
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
         <div class="card mb-0">
             <div class="flex justify-between mb-4">
@@ -147,7 +150,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>}
     <div class="col-span-12 lg:col-span-6 xl:col-span-3">
         <div class="card mb-0">
             <div class="flex justify-between mb-4">
@@ -230,6 +233,7 @@
     <p-chart type="bar" [data]="chartData()" [options]="chartOptions()" class="h-300" />
 
 </div> -->
+@if(currentUser?.role!='Agent'){
 <div class="flex w-full  flex-wrap justify-center gap-8 mb-8">
     <div class="flex  ">
         <div class="card">
@@ -255,7 +259,7 @@
             <p-chart type="bar" [data]="charttData()" [options]="charttOptions()" class="h-100" />
         </div>
     </div> -->
-</div>
+</div>}
 <div class="col-span-12 lg:col-span-6 xl:col-span-3">
     <div class="card mb-0">
         <div class="flex justify-between mb-4">
@@ -294,52 +298,57 @@
         <div class="flex mb-8 gap-2 flex-wrap">
             <div class="gap-2 flex flex-wrap">
                 <p-select [options]="listeTypesDate" placeholder="Choisir cycle" appendTo="body"
-                    (ngModel)]="selectedType" (onChange)="changeLabelDate($event)">
+                    [(ngModel)]="selectedType" (change)="changeLabelDateStats($event)">
                 </p-select>
             </div>
-            <div class="gap-2 flex flex-wrap">
-                <input pInputText [type]="labelDate=='annee' ? 'year' : 'month'" id="date" class="col-span-2"
-                    [(ngModel)]="selectedDate" (change)="loadTrajetsStats()" />
 
-            </div>
-            <div class="gap-2 flex flex-wrap">
-                <label for="Destination" class="font-semibold w-24">Destination</label>
-                <p-select [options]="ListeVille" name="destination" [(ngModel)]="destination"
-                    placeholder="Choisir cycle" appendTo="body" (change)="loadTrajetsStats()">
-                </p-select>
-            </div>
+            @if(selectedType === 'mois'){
+            <p-datepicker [(ngModel)]="selectedDate" view="month" dateFormat="mm/yy" [readonlyInput]="true" />
+            }
+            @if(selectedType === 'annee'){
+            <p-datepicker [(ngModel)]="selectedDate" view="year" dateFormat="mm/yy" [readonlyInput]="true" />
+            }
+            @if(selectedType === 'semaine'){
+            <p-datepicker class="" [(ngModel)]="selectedDate" [showWeek]="true" />
+            }
+
             <div class="gap-2 flex flex-wrap">
                 <label for="Depart" class="font-semibold w-24">Depart</label>
                 <p-select [options]="ListeVille" name="depart" [(ngModel)]="depart" placeholder="Choisir cycle"
                     appendTo="body" (change)="loadTrajetsStats()">
                 </p-select>
             </div>
+            <div class="gap-2 flex align-center justify-center flex-wrap">
+                <label for="Destination" class="flex align-self-center font-semibold w-24 ">Destination</label>
+                <p-select [options]="ListeVille" name="destination" [(ngModel)]="destination"
+                    placeholder="Choisir cycle" appendTo="body" (change)="loadTrajetsStats()">
+                </p-select>
+            </div>
         </div>
         <div class="flex justify-center mt-4 grid grid-cols-1 gap-4">
             <div class="flex justify-center mt-4 grid grid-cols-3 gap-4  place-content-center">
                 <button pButton type="button" class="p-button-primary px-5" label="Afficher"
-                    (click)="afficherStatistiqueAvancee()"></button>
+                    (click)="loadTrajetsStats()"></button>
             </div>
-            @if(TrajetStats && showAdvancedStats){
+            <!-- {{TrajetStats?.totalTrajets}} -->
+            @if (trajetsStats$ | async; as stats) {
+
             <div class="flex justify-center mt-4 grid grid-cols-1 gap-4 ">
 
                 <div class=" flex justify-content-between">
-                    <span class="text-muted-color font-medium mb-4">destination:</span>
+                    <span class="text-muted-color font-medium mb-4">Nombre de trajets ce mois: Depart -
+                        Destination</span>
 
-                    <span class="text-600 text-sm mb-2">
-                        {{TrajetStats.trajets_type_Date_depart_destination}}
+                    <span class="text-600  text-xl text-primary ps-4 mb-2">
+                        {{stats.trajets_type_Date_depart_destination}}
                     </span>
 
-
-                    <!--<div class="text-900 font-medium text-xl">
-                        Nombre de trajets: {{TrajetStats.totalTrajets}}
-                    </div>-->
                 </div>
                 <div class=" flex justify-content-between">
-                    <span class="text-muted-color font-medium mb-4"> Nombre de trajets:</span>
+                    <span class="text-muted-color font-medium mb-4"> Nombre de trajets ce mois:</span>
 
-                    <span class="text-600 text-sm mb-2">
-                        {{TrajetStats.totalTrajets}}
+                    <span class="text-600  text-xl text-primary ps-4 mb-2">
+                        {{stats.totalTrajets}}
                     </span>
 
 
@@ -350,14 +359,28 @@
 
 
             </div>
+            <!-- <div class="card">
+                <div class="font-semibold text-xl mb-3">
+                    Statistiques Trajets
+                </div>
+
+                <div>
+                    <strong>Total trajets :</strong>
+                    {{ stats.totalTrajets }}
+                </div>
+
+                <div>
+                    <strong>Destination :</strong>
+                    {{ stats.trajets_type_Date_depart_destination }}
+                </div>
+            </div> -->
+
             }
+
+
         </div>
 
-        <div class="flex flex-col gap-0">
-            <span class="text-white">-</span>
-            <span class="text-white">-</span>
-            <span class="text-white">-</span>
-        </div>
+
 
     </div>
 </div>
