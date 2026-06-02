@@ -110,7 +110,7 @@
             <label for="Matricule" class="font-semibold ">Matricule</label>
             <!-- <input pInputText id="busId" class="flex-auto" [(ngModel)]="modconsommation.busId" autocomplete="off" />-->
             <div class="col-span-2">
-                <p-select class="w-full" [options]="listBus()" optionLabel="matricule" optionValue="id"
+                <p-select class="w-full" [options]="listBus()" optionLabel="matricule" optionValue="busId"
                     formControlName="busId" placeholder="Choisir matricule" appendTo="body"
                     [class.p-invalid]="modconsommationForm.get('busId')?.invalid && modconsommationForm.get('busId')?.touched">
                 </p-select>

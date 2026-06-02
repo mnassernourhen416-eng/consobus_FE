@@ -1,46 +1,73 @@
-// import { Injectable, Signal } from "@angular/core";
-// import { HttpClient } from "@angular/common/http";
-// import { environment } from "@/environments/environment.development";
-// import { inject } from "@angular/core";
-// import { Observable } from "rxjs";
-// import { firstValueFrom } from "rxjs";
+// import { environment } from '@/environments/environment.development';
+// import { HttpClient } from '@angular/common/http';
+// import { inject, Injectable } from '@angular/core';
+// import { Observable } from 'rxjs';
 
-// interface Message {
-//   content: string;
-//   sender: 'user' | 'assistant';
-// }
 // @Injectable({
-//   providedIn: 'root'
+//     providedIn: 'root',
 // })
 // export class ChatsService {
-//     private apiUrl = environment.apiUrl
+//     private apiUrl = environment.apiUrl;
 //     private http = inject(HttpClient);
 
-//     sessionId:Signal<string | null> = () => null;
-//     messages: Signal<Message[]> = () => [];
-//     loading: Signal<boolean> = () => false;
-
-//     async startNewSession() {
-//         const response = await firstValueFrom(this.http.post<{ id: string }>(`${this.apiUrl}/chats/session`, {}));
-//         this.sessionId.set(response.id);
-//         this.messages.set([]);
-//     }
-//     async sendMessage(content: string) {
-//         if (!this.sessionId()) {
-//             await this.startNewSession();
-//         }
-//         this.loading.set(true);
-//         this.messages.set([...prev, {role: 'user', content }]);
-//         try {
-//             const res = await firstValueFrom(this.http.post<{ content: string }>(`${this.apiUrl}/chats/message`, { sessionId: this.sessionId(), content }));
-//             this.messages.update((prev) => [...prev, {role: 'assistant', content: response.content }]);
-//         } catch (error) {
-//             console.error('Error sending message:', error);
-//         } finally {
-//             this.loading.set(false);
-
-//         }
+//     createSession(): Observable<any> {
+//         return this.http.post<any>(`${this.apiUrl}/chats/session`, {});
 //     }
 
-//   constructor() { }
+//     getRecentSessions(): Observable<any[]> {
+//         return this.http.get<any[]>(`${this.apiUrl}/chats/sessions`);
+//     }
+
+//     getSessionMessages(sessionId: number): Observable<any[]> {
+//         return this.http.get<any[]>(`${this.apiUrl}/chats/session/${sessionId}/messages`);
+//     }
+
+//     sendMessage(sessionId: number, message: string): Observable<any> {
+//         return this.http.post<any>(`${this.apiUrl}/chats/message/${sessionId}`, { message });
+//     }
 // }
+import { environment } from '@/environments/environment.development';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { timeout, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+
+@Injectable({
+    providedIn: 'root',
+})
+export class ChatsService {
+    private apiUrl = environment.apiUrl;
+    private http = inject(HttpClient);
+
+    createSession(): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/chats/session`, {});
+    }
+
+    getRecentSessions(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/chats/sessions`);
+    }
+
+    getSessionMessages(sessionId: number): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/chats/session/${sessionId}/messages`);
+    }
+
+    sendMessage(sessionId: number, message: string): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/chats/message/${sessionId}`, { message }).pipe(
+            timeout(90000), // 90 seconds — give Ollama enough time to respond
+            catchError((err) => {
+                if (err.name === 'TimeoutError') {
+                    return throwError(() => new Error('La réponse du serveur a pris trop de temps. Veuillez réessayer.'));
+                }
+                return throwError(() => err);
+            })
+        );
+    }
+
+    getTrajets(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/trajet/all`).pipe(
+            timeout(90000),
+            catchError((err) => throwError(() => err))
+        );
+    }
+}

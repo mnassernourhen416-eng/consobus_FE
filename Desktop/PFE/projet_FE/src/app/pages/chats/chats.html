@@ -1,31 +1,135 @@
-<!-- <p>chats works!</p>
-<div class="chatbot-container p-shadow-4">
-    <div class="chatbot-header p-shadow-2">
-        <h3><i class="pi pi-comments"></i> Chatbot</h3>
-    </div>
-    <p-scrollPanel [style]="{width:'100%',height:'350px'}" styleClass="custombar-1">
-        <div class="chat-message">
-            @for(msg of chatsService.message(); track $index) {
-            <div class="message-wrapper" [className]="msg.role === 'user' ? 'user-align' : 'bot-align'">
-                <div [className]="msg.role === 'user' ? 'msg-user p-component': 'msg-bot p-component'">
-                    {{msg.content}}
-                </div>
-            </div>
-            }
-            @if (chatsService.loading()) {
-            <div class="bot-align">
-                <div class="msg-bot p-component">
-                    <i class="pi pi-spin pi-spinner"></i> Loading...
-                </div>
-            </div>
-            }
+<div class="chat-workspace">
+    <!-- Sidebar for Sessions -->
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <h3><i class="pi pi-comments"></i> Discussions</h3>
+            <button pButton type="button" icon="pi pi-plus" label="Nouveau"
+                class="p-button-outlined p-button-sm new-session-btn" (click)="createNewSession()" [disabled]="loading">
+            </button>
         </div>
-    </p-scrollPanel>
-    <div class="chatbot-input p-inputgroup">
-        <input type="text" pInputText #pInputText placeholder="Poser votre question..." [(ngModel)]="UserMessage"
-            (keydown.enter)="sendMessage()" [disabled]="chatsService.laoding()" />
-        <button pButton type="button" icon="pi pi-send" label="Send" (click)="sendMessage()"
-            [disabled]="chatsService.loading() || !userMessage.trim()">
-        </button>
+        <div class="sessions-list">
+            <ng-container *ngIf="sessions.length === 0; else sessionsList">
+                <div class="no-sessions">
+                    Aucune discussion
+                </div>
+            </ng-container>
+            <ng-template #sessionsList>
+                <div *ngFor="let session of sessions" class="session-item"
+                    [class.active]="session.id === activeSessionId" (click)="selectSession(session.id)">
+                    <i class="pi pi-comment session-icon"></i>
+                    <div class="session-details">
+                        <span class="session-title">Discussion #{{session.id}}</span>
+                        <span class="session-time">{{session.createdAt | date:'dd/MM/yyyy HH:mm'}}</span>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
     </div>
-</div> -->
+
+    <!-- Main Chat Window -->
+    <div class="chat-window">
+        <div class="chat-window-header">
+            <div class="header-info">
+                <div class="bot-avatar">
+                    <i class="pi pi-android"></i>
+                </div>
+                <div>
+                    <h4>Assistant Intelligent</h4>
+                    <span class="status-indicator">
+                        <span class="status-dot"></span>
+                        Ollama
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <p-scrollPanel #scrollPanel [style]="{ width: '100%', height: 'calc(100vh - 280px)' }"
+            styleClass="custom-scrollpanel">
+            <div class="messages-container">
+                <div class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="pi pi-info-circle"></i>
+                    </div>
+                    <p>Bienvenue sur le Chatbot de gestion des bus ! Je réponds aux questions sur les bus, les trajets,
+                        les chauffeurs, les consommations ou les statistiques stockées dans l'application.</p>
+                </div>
+
+                <div *ngFor="let msg of messages" class="message-row" [class.user-row]="msg.role === 'user'"
+                    [class.bot-row]="msg.role !== 'user'">
+                    <div class="avatar">
+                        <i [class]="msg.role === 'user' ? 'pi pi-user' : 'pi pi-android'"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <ng-container *ngIf="msg.role !== 'assistant'">
+                            <p class="message-text">{{ msg.content }}</p>
+                        </ng-container>
+                        <ng-container *ngIf="msg.role === 'assistant'">
+                            <p class="message-text" [innerHTML]="msg.content"></p>
+                        </ng-container>
+                        <span class="message-time">{{ msg.createdAt | date:'HH:mm' }}</span>
+                    </div>
+                </div>
+
+                <div *ngIf="loading" class="message-row bot-row loading-row">
+                    <div class="avatar">
+                        <i class="pi pi-android"></i>
+                    </div>
+                    <div class="message-bubble loading-bubble">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p-scrollPanel>
+
+        <div *ngIf="showTrajetsTable" class="trajet-table-container">
+            <div class="trajet-header">
+                <h3><i class="pi pi-map"></i> Liste des trajets</h3>
+                <span class="trajet-count">Total: {{trajets.length}} trajet(s)</span>
+            </div>
+            <p-table #dataTable [value]="trajets" [paginator]="trajets.length > 10" [rows]="10"
+                [rowsPerPageOptions]="[5,10,20,50]" [tableStyle]="{ 'min-width': '100%' }" responsiveLayout="scroll"
+                [globalFilterFields]="['depart','destination','bus.matricule']" class="trajet-table">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn>Matricule bus<p-sortIcon field="bus.matricule"></p-sortIcon></th>
+                        <th pSortableColumn>Départ<p-sortIcon field="depart"></p-sortIcon></th>
+                        <th pSortableColumn>Destination<p-sortIcon field="destination"></p-sortIcon></th>
+                        <th pSortableColumn>Kilométrage<p-sortIcon field="kilometrage"></p-sortIcon></th>
+                        <th pSortableColumn>Date<p-sortIcon field="date"></p-sortIcon></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-trajet let-rowIndex="rowIndex">
+                    <tr>
+                        <td>
+                            <span class="badge badge-info">{{ trajet.bus?.matricule || 'N/A' }}</span>
+                        </td>
+                        <td>{{ trajet.depart }}</td>
+                        <td>{{ trajet.destination }}</td>
+                        <td class="text-right">{{ trajet.kilometrage }} km</td>
+                        <td>{{ trajet.date | date:'dd/MM/yyyy' }}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="5" class="text-center">Aucun trajet trouvé</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-bar">
+            <input type="text" pInputText placeholder="Posez votre question (ex: Quels bus sont en panne ?)"
+                [(ngModel)]="userMessage" (keydown.enter)="sendMessage()" [disabled]="loading || !activeSessionId"
+                class="chat-input-field" />
+            <button pButton type="button" icon="pi pi-send" (click)="sendMessage()"
+                [disabled]="loading || !userMessage.trim() || !activeSessionId" class="p-button-primary send-btn">
+            </button>
+        </div>
+    </div>
+</div>

@@ -82,6 +82,6 @@ export class Login {
 
         this.authService.signIn(this.matricule, this.password);
 
-        // this.router.navigate(['/']);
+        this.router.navigate(['/']);
     }
 }
